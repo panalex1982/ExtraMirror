@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+		<LinearLayout 
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="vertical">
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		
+		        <TextView
+		            android:id="@+id/measureUnitsLabelSettingsTextView"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_margin="@dimen/five_sp"
+		            android:layout_weight="0.1"
+		            android:text="@string/measure_units"
+		            android:textSize="15sp" />
+		
+		        <Spinner
+		            android:id="@+id/measureUnitsSettingsSpinner"
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="0.49"
+		            android:prompt="@string/measure_units" />
+		
+		    </LinearLayout>
+		
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		
+		        <TextView
+		            android:id="@+id/brightnessLabelSettingsTextView"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_margin="@dimen/five_sp"
+		            android:layout_weight="0.1"
+		            android:text="@string/brightness"
+		            android:textSize="15sp" />
+		
+		        <SeekBar
+		            android:id="@+id/brightnessSettingsSeekBar"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="0.28"
+		            android:max="10"
+		            android:progress="2" />
+		
+		    </LinearLayout>
+		
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		
+		        <TextView
+		            android:id="@+id/energySavingLabelSettingsTextView"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_margin="@dimen/five_sp"
+		            android:layout_weight="0.10"
+		            android:text="@string/energy_saving_mode"
+		            android:textSize="15sp" />
+		
+		        <CheckBox
+		            android:id="@+id/energySavingSettingsCheckBox"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="0.89"
+		            android:text="@string/screen_always_on"
+		            android:textColor="@color/lawn_green" />
+		
+		    </LinearLayout>
+		
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		        <TextView
+		        android:id="@+id/speedometerModeLabelSettingsTextView"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:text="@string/speedometer_mode"
+		        android:textSize="15sp"
+		        android:layout_margin="@dimen/five_sp"
+		        android:layout_weight="0.1" />
+		
+		        <Spinner
+		            android:id="@+id/speedometerModeSettingsSpinner"
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="0.78"
+		            android:prompt="@string/speedometer_mode" />
+		
+		    </LinearLayout>
+		
+		    <LinearLayout
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		
+		        <TextView
+		            android:id="@+id/showIntroLabelSettingsTextView"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_margin="@dimen/five_sp"
+		            android:layout_weight="0.10"
+		            android:textSize="15sp"
+		            android:text="@string/show_intro" />
+		
+		        <CheckBox
+		            android:id="@+id/showIntroSettingsCheckBox"
+		            android:layout_width="0dp"
+		            android:layout_height="wrap_content"
+		            android:layout_weight="0.84"
+		            android:text="@string/enable_intro" />
+		    </LinearLayout>
+	 	</LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

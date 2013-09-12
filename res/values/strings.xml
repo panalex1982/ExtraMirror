@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Extra Mirror</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_mirror">MirrorActivity</string>
+    <string name="zero">0</string>
+    <string name="elapsed_time">Moving time:</string>
+    <string name="khm_hour">Khm/h</string>
+    <string name="gas_consumed">Gas Consumed:</string>
+    <string name="liters">lt</string>
+    <string name="refill">Refill</string>
+    <string name="fuel_tank">Fuel Tank:</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="title_activity_route_stats">RouteStatsActivity</string>
+    <string name="idle_time">Standing Time:</string>
+    <string name="engine">Engine</string>
+    <string name="road_slope">Road Slope (%)</string>
+    <string name="open_speed_plot">Open speed plot</string>
+    <string name="stats">Stats</string>
+    <string name="open_camera">Open Camera</string>
+    <string name="camera_1">Front Camera</string>
+    <string name="camera_2">Mirror Camera</string>
+    <string name="altitude">Αltitude:</string>
+    <string name="kilometers">Khm</string>
+
+    <string-array name="measure_units_values">
+        <item>Metric (kilometers, kilometers/hour)</item>
+        <item>Imperial (miles, miles per hour)</item>
+    </string-array>
+
+    <string name="measure_units">Measure Units</string>
+    <string name="energy_saving_mode">Energy Saving Mode</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="brightness">Brightness</string>
+    <string name="screen_always_on">Screen always on</string>
+    <string name="exit">Exit</string>
+    <string name="speedometer_mode">Speedometer Mode</string>
+
+    <string-array name="speedometer_modes_array">
+        <item>Analog</item>
+        <item>Digital</item>
+    </string-array>
+
+    <string name="title_activity_intro">IntroActivity</string>
+    <string name="start_extra_mirror">Start Extra Mirror</string>
+    <string name="show_intro">Zoom Instructions</string>
+    <string name="enable_intro">check to show instructions window</string>
+    <string name="hide_action_bar">Hide Action Bar</string>
+
+</resources>
