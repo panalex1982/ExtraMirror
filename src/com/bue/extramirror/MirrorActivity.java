@@ -1,10 +1,7 @@
 package com.bue.extramirror;
 
 import java.text.DecimalFormat;
-import java.util.Random;
 
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
@@ -21,18 +18,11 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.text.format.Time;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -43,7 +33,6 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,6 +44,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.bue.extramirror.customviews.AnalogSpeedMeterView;
 import com.bue.extramirror.customviews.CameraPreview;
 import com.bue.extramirror.customviews.SettingsDialogFragment;
+import com.bue.extramirror.tasks.TimerRunnable;
 import com.bue.extramirror.utilities.Clock;
 import com.bue.extramirror.utilities.ExtraMirrorSharedPreferences;
 import com.bue.extramirror.utilities.Keys;
@@ -80,8 +70,6 @@ public class MirrorActivity extends FragmentActivity implements
     // private int ANALOG_SPEED_METER=0;
     // private int DIGITAL_SPEED_METER=1;
 
-    private int currentapiVersion;
-
     private Camera mCamera;
     private int cameraId;
     private CameraPreview mPreview;
@@ -93,17 +81,14 @@ public class MirrorActivity extends FragmentActivity implements
 
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private Time now;
 
-    // TODO: Notification private NotificationManager mNotificationManager;
 
     private SharedPreferences sharedSettings;
     private int measureUnit;// 0 means metric, 1 means imperial
     private boolean energySaving;
     private float brightness;
     private int speedometerIndicatorMode;
-    private boolean showIntro;
-    private boolean backPressed;
+    //private boolean backPressed;
     protected boolean cameraJustChanged;
 
     private int speed;
@@ -118,30 +103,26 @@ public class MirrorActivity extends FragmentActivity implements
     // Layout Controls
     private ActionBar actionBar;
     private FrameLayout preview;
-    private RelativeLayout indicatorsRelativeLayout;
-    private LayoutParams lpAnalogSpeedMeter;
 
-    private TextView elapsedTimeTextView;
-    private TextView idleTimeTextView;
     private TextView altimiterLabelTextView;
     private TextView altimiterIndicatorTextView;
-    private TextView watchTextView;
     private AnalogSpeedMeterView analogSpeedMeter;
     private ImageView optionsMenuImageButton;
 
     private CheckBox mirrorCameraCheckBox, frontCameraCheckBox;
-    private ToggleButton engineToggleButton;
 
-    private double latitude, longitude;
+//    private double latitude, longitude;
 
     //Orientation variable
     float prv_roll_angle;
 
     // Ads Controls
     private AdView adView;
-    private LinearLayout adsLinearLayout;
+
+
     private SensorManager mSensorManager;
     private Sensor mOrientation;
+    private TimerRunnable timer;
 
 
     @SuppressLint("NewApi")
@@ -154,6 +135,9 @@ public class MirrorActivity extends FragmentActivity implements
         // Log.d("Exception", exs);
         // }
 
+//        Intent intent = new Intent(this, ExtraMirrorService.class);
+//        startService(intent);
+
         // Retrieve Saved Settings
         sharedSettings = getSharedPreferences(PREFS_NAME, 0);
         measureUnit = sharedSettings.getInt(PREFS_MEASURE_UNIT, 0);
@@ -161,7 +145,7 @@ public class MirrorActivity extends FragmentActivity implements
         energySaving = sharedSettings.getBoolean(PREFS_ENERGY_SAVING, false);
         speedometerIndicatorMode = sharedSettings.getInt(PREFS_SPEEDINDICATOR,
                 0);
-        backPressed = false;
+        //backPressed = false;
         cameraJustChanged = false;
         systemParameters = getWindow().getAttributes();
         // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
@@ -177,18 +161,18 @@ public class MirrorActivity extends FragmentActivity implements
             Log.d("Exception", exs);
         }
         setContentView(R.layout.activity_mirror);
-        currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 
         setBrightness();
         setEnergySaving();
 
-        elapsedTimeTextView = (TextView) findViewById(R.id.elapsedTimeTextView);
-        idleTimeTextView = (TextView) findViewById(R.id.idleTimeTextView);
+        TextView elapsedTimeTextView = (TextView) findViewById(R.id.elapsedTimeTextView);
+        TextView idleTimeTextView = (TextView) findViewById(R.id.idleTimeTextView);
         altimiterIndicatorTextView = (TextView) findViewById(R.id.altimiterIndicatorTextView);
         altimiterLabelTextView = (TextView) findViewById(R.id.altimiterLabelTextView);
-        watchTextView = (TextView) findViewById(R.id.watchTextView);
+        TextView watchTextView = (TextView) findViewById(R.id.watchTextView);
         preview = (FrameLayout) findViewById(R.id.camera_preview);
-        indicatorsRelativeLayout = (RelativeLayout) findViewById(R.id.indicatorsRelativeLayout);
+        RelativeLayout indicatorsRelativeLayout = (RelativeLayout) findViewById(R.id.indicatorsRelativeLayout);
         optionsMenuImageButton = (ImageView) findViewById(R.id.optionsMenuImageButton);
         if (currentapiVersion < android.os.Build.VERSION_CODES.HONEYCOMB)
             optionsMenuImageButton.setVisibility(View.INVISIBLE);
@@ -207,15 +191,14 @@ public class MirrorActivity extends FragmentActivity implements
         else
             analogSpeedMeter = new AnalogSpeedMeterView(this, smallerDimension,
                     "mph", speedometerIndicatorMode);
-        lpAnalogSpeedMeter = new LayoutParams((int) smallerDimension,
+        LayoutParams lpAnalogSpeedMeter = new LayoutParams((int) smallerDimension,
                 (int) smallerDimension);
         lpAnalogSpeedMeter.setMargins(5, 20, 50, 5);
         indicatorsRelativeLayout.addView(analogSpeedMeter, lpAnalogSpeedMeter);
 
         setSpeedometer();
 
-    engineToggleButton = null;
-        engineToggleButton = (ToggleButton) findViewById(R.id.engineToggleButton);
+        ToggleButton engineToggleButton = (ToggleButton) findViewById(R.id.engineToggleButton);
         mirrorCameraCheckBox = (CheckBox) findViewById(R.id.mirrorCameraCheckBox);
         frontCameraCheckBox = (CheckBox) findViewById(R.id.frontCameraCheckBox);
 
@@ -226,10 +209,6 @@ public class MirrorActivity extends FragmentActivity implements
         idleTimeTextView.setText(clock.convertTime(0l));
 
         // Initialize Parameters
-        // TODO: Notification boolean toggleEngine=false;//It is used to toggle
-        // engine button if it was active before Notification Button used
-        // TODO: Notification Bundle extras = getIntent().getExtras();
-
         if (savedInstanceState != null) {
             idleTime = savedInstanceState.getLong(IDLE_TIME);
             drivingTime = savedInstanceState.getLong(DRIVING_TIME);
@@ -239,17 +218,7 @@ public class MirrorActivity extends FragmentActivity implements
                     .getBoolean(ENGINE_PREVIOUS_STATE);
             elapsedTimeTextView.setText(clock.convertTime(drivingTime));
             idleTimeTextView.setText(clock.convertTime(idleTime));
-        }/*
-         * TODO: Notificationelse else if(extras!=null){
-		 * idleTime=extras.getLong(IDLE_TIME);
-		 * drivingTime=extras.getLong(DRIVING_TIME);
-		 * distance=extras.getFloat(DRIVING_DISTANCE);
-		 * elapsedTimeTextView.setText(clock.convertTime(drivingTime));
-		 * idleTimeTextView.setText(clock.convertTime(idleTime)); startEngine =
-		 * extras.getBoolean(ENGINE_STATE);
-		 * wasEngineInactive=extras.getBoolean(ENGINE_PREVIOUS_STATE);
-		 * if(startEngine) toggleEngine=true; }
-		 */ else {
+        }else {
             idleTime = 0l;
             drivingTime = 0l;
             distance = 8000.3f;// 0.0f;
@@ -258,52 +227,14 @@ public class MirrorActivity extends FragmentActivity implements
         }
         speed = 0;
         speedms = 0.0f;
-        latitude = 0.0;
-        longitude = 0.0;
-        now = new Time();
+//        latitude = 0.0;
+//        longitude = 0.0;
 
         runnableHandlers = new Handler();
-        final Runnable drivingTimeRunnable = new Runnable() {
-            public void run() {
-                drivingTime += 1000;
 
-                // TODO: open on debug Log.d("TimerRunning", "Driving for... " +
-                // drivingTime);
-                Clock clock = new Clock();
-                elapsedTimeTextView.setText(clock.convertTime(drivingTime));
-                distance += speedms;
-                updateDistance();
-
-                runnableHandlers.postDelayed(this, 1000);
-            }
-        };
-
-        final Runnable idleTimeRunnable = new Runnable() {
-            public void run() {
-                idleTime += 1000;
-                // TODO: open on debug Log.d("TimerIdle", "Idle for... " +
-                // idleTime);
-                Clock clock = new Clock();
-                idleTimeTextView.setText(clock.convertTime(idleTime));
-                runnableHandlers.postDelayed(this, 1000);
-            }
-        };
-
-        final Runnable watch = new Runnable() {
-            public void run() {
-
-                now.setToNow();
-                watchTextView.setText(now.format("%k:%M|%d-%m-%Y"));
-                // TODO: open on debug Log.d("TimerWatch",
-                // "Watch for... "+now.format("%k:%M|%d-%m-%Y"));
-                runnableHandlers.postDelayed(this, 1000);
-            }
-        };
-        runnableHandlers.post(watch);
-
-		/* I register all Listeners below */
-
-        // Acquire a reference to the system Location Manager
+        timer=new TimerRunnable(runnableHandlers, watchTextView, elapsedTimeTextView,
+                idleTimeTextView, drivingTime, idleTime, distance);
+        runnableHandlers.post(timer);
         locationManager = (LocationManager) this
                 .getSystemService(Context.LOCATION_SERVICE);
 
@@ -315,26 +246,28 @@ public class MirrorActivity extends FragmentActivity implements
                 // Random randomGenerator = new Random();
                 // randomGenerator.setSeed((long)(location.getAltitude()*100));
                 speedms = 19.94f;// location.getSpeed();//randomGenerator.nextFloat()*72.2f;
+                timer.setSpeedms(speedms);
                 speed = (int) (speedms * 3600.0f);
                 altitude = location.getAltitude();
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                // TODO: open on debug Log.d("Locatiob: ",
-                // latitude+":"+longitude);
+//                latitude = location.getLatitude();
+//                longitude = location.getLongitude();
 
-                updateSpeed();
+                updateSpeedometer(timer.getDistance());
 
                 altimiterIndicatorTextView.setText(formatHeight(altitude));
                 if (startEngine) {
                     if (speed == 0) {
-                        runnableHandlers.removeCallbacks(drivingTimeRunnable);
+                        //timer.closeEngine();
+                        //runnableHandlers.removeCallbacks(drivingTimeRunnable);
                         if (prvSpeed != 0)
-                            runnableHandlers
-                                    .postDelayed(idleTimeRunnable, 1000);
+                            timer.stopMoving();
+                            /*runnableHandlers
+                                    .postDelayed(idleTimeRunnable, 1000);*/
                     } else if ((prvSpeed == 0 || wasEngineInactive)
                             && speed > 0) {
-                        runnableHandlers.removeCallbacks(idleTimeRunnable);
-                        runnableHandlers.postDelayed(drivingTimeRunnable, 1000);
+                        timer.startMoving();
+                        /*runnableHandlers.removeCallbacks(idleTimeRunnable);
+                        runnableHandlers.postDelayed(drivingTimeRunnable, 1000);*/
                     }
                     wasEngineInactive = false;
                 }
@@ -383,14 +316,16 @@ public class MirrorActivity extends FragmentActivity implements
                                                      boolean isChecked) {
                             startEngine = isChecked;
                             if (startEngine) {
-                                runnableHandlers.postDelayed(idleTimeRunnable,
-                                        1000);
+//                                runnableHandlers.postDelayed(idleTimeRunnable,
+//                                        1000);
+                                timer.stopMoving();
                                 changeTextColors(Color.GREEN);
                             } else {
-                                runnableHandlers
-                                        .removeCallbacks(idleTimeRunnable);
-                                runnableHandlers
-                                        .removeCallbacks(drivingTimeRunnable);
+//                                runnableHandlers
+//                                        .removeCallbacks(idleTimeRunnable);
+//                                runnableHandlers
+//                                        .removeCallbacks(drivingTimeRunnable);
+                                timer.closeEngine();
                                 changeTextColors(Color.RED);
                                 wasEngineInactive = true;
                             }
@@ -486,16 +421,11 @@ public class MirrorActivity extends FragmentActivity implements
 
         });
 
-		/*
-         * TODO: Notification if(toggleEngine) engineToggleButton.toggle();
-		 */
-
         // Add Advertisements
         // Create the adView
         adView = new AdView(this, AdSize.SMART_BANNER, Keys.AD_MOB_KEY);
-        // adView.setRotationX(90.f);
 
-        adsLinearLayout=(LinearLayout) findViewById(R.id.adsLinearLayout);
+        LinearLayout adsLinearLayout = (LinearLayout) findViewById(R.id.adsLinearLayout);
         // Add the adView to it
         try {
             adsLinearLayout.addView(adView);
@@ -508,7 +438,7 @@ public class MirrorActivity extends FragmentActivity implements
         AdRequest adRequest = new AdRequest();
         adRequest.addTestDevice(AdRequest.TEST_EMULATOR); // Emulator
         // adRequest.addTestDevice("TEST_DEVICE_ID"); // Test Android Device
-        //adView.loadAd(adRequest);
+        adView.loadAd(adRequest);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
@@ -550,7 +480,7 @@ public class MirrorActivity extends FragmentActivity implements
             case R.id.menu_exit:
                 // getWindow().setAttributes(systemParameters);//Set System Screen
                 // Settings
-                backPressed = true;
+                //backPressed = true;
                 RuntimeSharedObjects.closeApplication = true;
                 finish();
                 return true;
@@ -570,7 +500,7 @@ public class MirrorActivity extends FragmentActivity implements
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
                                                 int which) {
-                                backPressed = true;
+                                //backPressed = true;
                                 RuntimeSharedObjects.closeApplication = true;
                                 finish();
                             }
@@ -616,6 +546,7 @@ public class MirrorActivity extends FragmentActivity implements
         editor.putInt(PREFS_ACTIVE_CAMERA, cameraId);
         editor.commit();
         getWindow().setAttributes(systemParameters);// Set System Screen
+        //runnableHandlers.removeCallbacks(timer);
         // Settings
         // Intent intent = new Intent(Intent.ACTION_MAIN);
         // intent.addCategory(Intent.CATEGORY_HOME);
@@ -645,13 +576,12 @@ public class MirrorActivity extends FragmentActivity implements
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putLong(IDLE_TIME, idleTime);
-        outState.putLong(DRIVING_TIME, drivingTime);
+        outState.putLong(IDLE_TIME, timer.getIdleTime());//idleTime);
+        outState.putLong(DRIVING_TIME, timer.getDrivingTime());//drivingTime);
         outState.putFloat(DRIVING_DISTANCE, distance);
         outState.putBoolean(ENGINE_STATE, startEngine);
         outState.putBoolean(ENGINE_PREVIOUS_STATE, wasEngineInactive);
         outState.putBoolean(STATE_PAUSED_AT_MAIN, true);
-        // TODO: Notification createNotification(outState);
         super.onSaveInstanceState(outState);
     }
 
@@ -679,16 +609,6 @@ public class MirrorActivity extends FragmentActivity implements
         return c; // returns null if camera is unavailable
     }
 
-    public static Camera getCameraInstance() {
-        Camera c = null;
-        try {
-            c = Camera.open(); // attempt to get a Camera instance
-        } catch (Exception e) {
-            // Camera is not available (in use or does not exist)
-        }
-        return c; // returns null if camera is unavailable
-    }
-
     @SuppressLint("NewApi")
     public void initializeCameraPreview(int lastActiveCamera) {
         // Check number of cameras
@@ -707,7 +627,7 @@ public class MirrorActivity extends FragmentActivity implements
                 }
             }
             if (lastActiveCamera == MIRROR_CAMERA
-                    ) {//|| lastActiveCamera == NO_CAMERA
+                    ) {
                 cameraJustChanged = true;
                 mirrorCameraCheckBox.setChecked(true);
                 cameraJustChanged = false;
@@ -735,15 +655,7 @@ public class MirrorActivity extends FragmentActivity implements
                 mPreview = new CameraPreview(this, mCamera);
                 mPreview.startPreview();
                 preview.addView(mPreview);
-            }/*
-			 * mCamera = getCameraInstance(FRONT_CAMERA); cameraId = NO_CAMERA;
-			 * 
-			 * // Create our Previews view and set it as the content of our //
-			 * activity. mPreview = new CameraPreview(this, mCamera);
-			 * mPreview.startPreview(); preview.addView(mPreview);
-			 * preview.removeAllViews(); mPreview.stopPreview();
-			 * //mPreview.releaseCamera(); }
-			 */
+            }
         } else if (Camera.getNumberOfCameras() == 1) {
             CameraInfo cameraInfo = new CameraInfo();
             Camera.getCameraInfo(0, cameraInfo);
@@ -781,14 +693,6 @@ public class MirrorActivity extends FragmentActivity implements
         }
     }
 
-    // public void changeCamera(int camera) {
-    // mPreview.stopPreview();
-    // mPreview.releaseCamera();
-    // mCamera = getCameraInstance(camera);
-    // mPreview.changeCamera(mCamera);
-    // cameraId = camera;
-    // }
-
     public void changeCamera(int previousCamera, int newCamera) {
         if (newCamera == NO_CAMERA) {
             preview.removeAllViews();
@@ -796,24 +700,18 @@ public class MirrorActivity extends FragmentActivity implements
             mPreview.releaseCamera();
             mPreview = null;
             mCamera.release();
-            // mCamera=null;
-            // mPreview.releaseCamera();
         } else {
             if (previousCamera == NO_CAMERA) {
-                // mPreview.releaseCamera();
                 mCamera = getCameraInstance(newCamera);
                 mPreview = new CameraPreview(this, mCamera);
                 mPreview.startPreview();
                 preview.addView(mPreview);
-                // mPreview.changeCamera(mCamera);
-                // mPreview.startPreview();
-                // preview.addView(mPreview);
             } else {
                 mPreview.stopPreview();
                 mPreview.releaseCamera();
                 mCamera.release();
                 preview.removeAllViews();
-                // mCamera=null;
+
                 mCamera = getCameraInstance(newCamera);
                 mPreview.changeCamera(mCamera);
                 mPreview.startPreview();
@@ -871,13 +769,14 @@ public class MirrorActivity extends FragmentActivity implements
         analogSpeedMeter.changeMode(speedometerIndicatorMode);
     }
 
-    private void updateSpeed() {
+    private void updateSpeedometer(float distance) {
         analogSpeedMeter.setSpeed(speed);
-    }
-
-    private void updateDistance() {
         analogSpeedMeter.setDistance(distance);
     }
+
+//    private void updateDistance(float distance) {
+//        analogSpeedMeter.setDistance(distance);
+//    }
 
 	/*
 	 * Implementation of SettingsDialogFragment.SettingsDialogListener
@@ -886,10 +785,7 @@ public class MirrorActivity extends FragmentActivity implements
 	 * @see com.bue.extramirror.SettingsDialogFragment.SettingsDialogListener#
 	 * onDialogPositiveClick(android.support.v4.app.DialogFragment)
 	 */
-
     public void onDialogPositiveClick(DialogFragment dialog) {
-        // TODO: open on debug
-        // Log.d("onDialogPositiveClick","onDialogPositiveClick");
         SettingsDialogFragment settings = (SettingsDialogFragment) dialog;
         SharedPreferences.Editor editor = sharedSettings.edit();
         brightness = settings.getBrightness();
@@ -900,19 +796,19 @@ public class MirrorActivity extends FragmentActivity implements
         speedometerIndicatorMode = settings.getSpeedometerIndicatorMode();
         editor.putInt(PREFS_SPEEDINDICATOR, speedometerIndicatorMode);
         setSpeedometer();
-        showIntro = settings.isShowIntro();
+        boolean showIntro = settings.isShowIntro();
         editor.putBoolean(PREFS_SHOW_INTRO, showIntro);
         measureUnit = settings.getMeasureUnit();
         switch (measureUnit) {
             case 0:
                 analogSpeedMeter.setMeasureUnit("Km/h");
-                updateSpeed();
+                updateSpeedometer(timer.getDistance());
                 editor.putInt(PREFS_MEASURE_UNIT, 0);
                 editor.commit();
                 break;
             case 1:
                 analogSpeedMeter.setMeasureUnit("mph");
-                updateSpeed();
+                updateSpeedometer(timer.getDistance());
                 editor.putInt(PREFS_MEASURE_UNIT, 1);
                 editor.commit();
                 break;
@@ -927,28 +823,7 @@ public class MirrorActivity extends FragmentActivity implements
     }
 
     public void onDialogNegativeClick(DialogFragment dialog) {
-        // Log.d("onDialogNegativeClick", "onDialogNegativeClick");
         setBrightness();
-    }
-
-    public void createNotification(Bundle outState) {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-                this).setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle("Extra Mirror").setAutoCancel(true);
-        Intent resultIntent = new Intent(this, MirrorActivity.class);
-        resultIntent.setAction(Intent.ACTION_MAIN);
-        resultIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        resultIntent.putExtras(outState);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(IntroActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
-        mNotificationManager.notify(1, mBuilder.build());
     }
 
     @Override

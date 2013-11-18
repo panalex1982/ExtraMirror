@@ -32,7 +32,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private Camera.Size previewSize;
     //private ArrayList<Float> eventX;
     private ArrayList<Float> eventY;
-    private CharSequence noZoomText;
     private Toast noZoomToast;
     private boolean hasToastShowedUp;
 	private LayoutParams layoutParameters;
@@ -56,9 +55,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         //mHolder.getSurface().setSize(previewSize.width, previewSize.height);       
-        
-        
-        noZoomText = "This Camera does not support zoom, please change camera and try again!";
+
+
+        CharSequence noZoomText = "This Camera does not support zoom, please change camera and try again!";
         int duration = Toast.LENGTH_LONG;
         noZoomToast = Toast.makeText(context, noZoomText, duration);
         hasToastShowedUp=false;
