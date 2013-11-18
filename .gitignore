@@ -50,7 +50,10 @@ analytics.xml
 
 # Android Studio
 .idea
-.gradle
+*.gradle
+gradlew
+gradlew.bat
+gradle
 /*/local.properties
 /*/out
 /*/*/build
