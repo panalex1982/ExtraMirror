@@ -47,3 +47,16 @@ local.properties
 ##Other
 Keys.java
 analytics.xml
+
+# Android Studio
+.idea
+.gradle
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production
+*.iml
+*.iws
+*.ipr
+*~
+*.swp

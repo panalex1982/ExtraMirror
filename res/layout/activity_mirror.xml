@@ -1,8 +1,7 @@
 <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/home_layout"
@@ -56,18 +55,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/camera_1" />
 
-            <TextView
-                android:id="@+id/engineLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/engine"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
             <ToggleButton
                 android:id="@+id/engineToggleButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/engine" />
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:textOff=""
+                android:textOn=""
+                android:background="@drawable/key_toggle_button" />
 
             <TextView
                 android:id="@+id/watchTextView"

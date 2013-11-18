@@ -2,16 +2,20 @@ package com.bue.extramirror.customviews;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
 import android.os.Build;
 import android.support.v4.view.ViewPager.LayoutParams;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
@@ -23,6 +27,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private static final String TAG = "TAG_CAMERA";
 	private SurfaceHolder mHolder;
     private Camera mCamera;
+    private WindowManager windowManager;
     private int[] screenSize;
     private Camera.Size previewSize;
     //private ArrayList<Float> eventX;
@@ -30,14 +35,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private CharSequence noZoomText;
     private Toast noZoomToast;
     private boolean hasToastShowedUp;
+	private LayoutParams layoutParameters;
     
     public CameraPreview(Context context, Camera camera) {
         super(context);        
         screenSize=new int[2];
-        WindowManager mWinMgr = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-    	screenSize[0] = mWinMgr.getDefaultDisplay().getWidth();
-    	screenSize[1]=mWinMgr.getDefaultDisplay().getHeight();
+        windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+    	screenSize[0] = windowManager.getDefaultDisplay().getWidth();
+    	screenSize[1]=windowManager.getDefaultDisplay().getHeight();    	
         mCamera = camera;
+        layoutParameters=new LayoutParams();
         setCameraParameters();
         //eventX=new ArrayList<Float>();
         eventY=new ArrayList<Float>();
@@ -48,11 +55,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        //mHolder.getSurface().setSize(previewSize.width, previewSize.height);
-        LayoutParams params=new LayoutParams();
-        params.width=previewSize.width;
-        params.height=previewSize.height;
-        this.setLayoutParams(params);
+        //mHolder.getSurface().setSize(previewSize.width, previewSize.height);       
+        
         
         noZoomText = "This Camera does not support zoom, please change camera and try again!";
         int duration = Toast.LENGTH_LONG;
@@ -78,8 +82,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        // If your preview can change or rotate, take care of those events here.
-        // Make sure to stop the preview before resizing or reformatting it.
 
         if (mHolder.getSurface() == null){
           // preview surface does not exist
@@ -93,22 +95,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
           // ignore: tried to stop a non-existent preview
         }
 
-        // set preview size and make any resize, rotate or
-        // reformatting changes here
-
         // start preview with new settings
         try {
-            mCamera.setPreviewDisplay(mHolder);
+        	//setCameraParameters();
+        	mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
 
         } catch (Exception e){
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
-    
-    
-    
-    @Override
+
+	@Override
 	public boolean onTouchEvent(MotionEvent event) {
     	long a=event.getDownTime();
     	int z=event.getPointerCount();
@@ -169,28 +167,51 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         //mCamera.setPreviewDisplay(holder);
         //mHolder.getSurface().setSize(previewSize.width, previewSize.height);
-        LayoutParams params=new LayoutParams();
-        params.width=previewSize.width;
-        params.height=previewSize.height;
-        this.setLayoutParams(params);
+//        LayoutParams params=new LayoutParams();
+//        params.width=previewSize.width;
+//        params.height=previewSize.height;
+//        this.setLayoutParams(params);
         hasToastShowedUp=false;
     }
     
     public void setCameraParameters(){
     	Parameters params=mCamera.getParameters();  
     	previewSize=params.getSupportedPreviewSizes().get(0);
-    
-    	for(Camera.Size support : params.getSupportedPreviewSizes()){    		
-    		if(previewSize.width>support.width){
-    			previewSize=support;
-    		}
-    	}
-    	
-    	for(Camera.Size support : params.getSupportedPreviewSizes()){
-    		if((support.width>support.height)&&(support.width<screenSize[0])&&(previewSize.width<support.width)){
-    			previewSize=support;
-    		}
-    	}
+        //Rotate preview according to screen rotation
+        Display display = (windowManager).getDefaultDisplay();
+        switch(display.getRotation()){
+            case Surface.ROTATION_0:
+                mCamera.setDisplayOrientation(90);
+                //swapDimension();
+                calculateCameraSurface(params,1);
+                layoutParameters.height=previewSize.width;//This according to stackoverflow answer: http://stackoverflow.com/questions/17126633/camera-setdisplayorientation-in-portrait-mode-breaks-aspect-ratio
+                layoutParameters.width=previewSize.height;
+                this.setLayoutParams(layoutParameters);
+                break;
+            case Surface.ROTATION_270:
+                mCamera.setDisplayOrientation(180);
+                //swapDimension();
+                calculateCameraSurface(params,0);
+                layoutParameters.width=previewSize.width;
+                layoutParameters.height=previewSize.height;
+                this.setLayoutParams(layoutParameters);
+                break;
+            case Surface.ROTATION_180:
+            	mCamera.setDisplayOrientation(0);
+            	calculateCameraSurface(params,1);
+            	layoutParameters.height=previewSize.width;
+            	layoutParameters.width=previewSize.height;
+                this.setLayoutParams(layoutParameters);
+                break;
+            case Surface.ROTATION_90:
+            	mCamera.setDisplayOrientation(0);
+            	calculateCameraSurface(params,0);
+            	layoutParameters.width=previewSize.width;
+                layoutParameters.height=previewSize.height;
+                this.setLayoutParams(layoutParameters);
+                break;
+        }
+        
     	params.setPreviewSize(previewSize.width, previewSize.height);    	
     	mCamera.setParameters(params);
     }
@@ -229,6 +250,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public boolean isZoomSupported(){
     	Parameters params=mCamera.getParameters();
     	return params.isZoomSupported();
+    }
+    
+    /**
+     * Calculate the surface of the camera 
+     * @param params
+     * @param i 0 for landscape, 1 for portrait
+     */
+    private void calculateCameraSurface(Parameters params, int i){
+    	for(Camera.Size support : params.getSupportedPreviewSizes()){
+            Log.i("Size: ", support.width+", "+support.height);
+    		if(previewSize.width>support.width){
+    			previewSize=support;
+    		}
+    	}
+    	
+    	for(Camera.Size support : params.getSupportedPreviewSizes()){
+    		if((support.width>support.height)&&(support.width<screenSize[i])&&(previewSize.width<support.width)){
+    			previewSize=support;
+    		}
+    	}    	    	
     }
    
 }

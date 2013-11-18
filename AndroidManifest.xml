@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bue.extramirror"
     android:installLocation="preferExternal"
-    android:versionCode="10"
-    android:versionName="1.0.32" >
+    android:versionCode="11"
+    android:versionName="1.0.33" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -23,8 +23,7 @@
         android:label="@string/app_name"
         android:theme="@style/MainTheme" >
         <activity android:name="com.bue.extramirror.IntroActivity" 
-            android:label="@string/app_name"
-            android:screenOrientation="landscape">   
+            android:label="@string/app_name">
             <intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
@@ -32,7 +31,6 @@
         </activity>
         <activity
             android:name="com.bue.extramirror.MirrorActivity"
-            android:screenOrientation="landscape"
             android:label="">
 			<meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
@@ -40,8 +38,7 @@
             />			                     
         </activity>
         <service 
-            android:name="com.bue.extramirror.services.ExtraMirrorService">
-            
+            android:name="com.bue.extramirror.services.ExtraMirrorService">            
         </service>
         <activity
             android:name="com.google.ads.AdActivity"

@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="dexedLibs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/android-support-v4-3cdfde2ef6a00296b2a9d346a2b23ae9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/libGoogleAnalyticsV2-156e6766387c92433aac3d09e7de529c.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/GoogleAdMobAdsSdk-6.2.1-32d344ab1158f890eac74aa5b170acfe.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/libGoogleAnalyticsV2-dff496c4112b6b348f39f77275732c03.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/android-support-v4-e99f7a68c457622fddb81fcd4f30f7b8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/libGoogleAnalyticsV2-c43403fe0d6e4d07aa6b91b43fa96842.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/GoogleAdMobAdsSdk-6.2.1-c8efa1feff709c5f818354c524ae7056.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/libGoogleAnalyticsV2-d0a1df94cb2bb263ffae52a13dd7813b.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/GoogleAdMobAdsSdk-6.2.1-024ae78d9f519f02a849feb4ee2042ef.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/android-support-v4-8f82acbb97e1bf5e35409d5d1760496c.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/GoogleAdMobAdsSdk-6.2.1-10959b37182f801a13d0ae6567e29648.jar!/" />
+      <root url="jar://$PROJECT_DIR$/bin/dexedLibs/android-support-v4-70bd059a6600737221d33b83e0cc0b34.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
