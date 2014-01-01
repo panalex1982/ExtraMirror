@@ -37,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -89,7 +90,7 @@ public class MirrorActivity extends FragmentActivity implements
     private float brightness;
     private int speedometerIndicatorMode;
     //private boolean backPressed;
-    protected boolean cameraJustChanged;
+//    protected boolean cameraJustChanged;
 
     private int speed;
     protected long idleTime;
@@ -109,7 +110,8 @@ public class MirrorActivity extends FragmentActivity implements
     private AnalogSpeedMeterView analogSpeedMeter;
     private ImageView optionsMenuImageButton;
 
-    private CheckBox mirrorCameraCheckBox, frontCameraCheckBox;
+//    private CheckBox mirrorCameraCheckBox, frontCameraCheckBox;
+    private SeekBar cameraSeekBar;
 
 //    private double latitude, longitude;
 
@@ -123,6 +125,7 @@ public class MirrorActivity extends FragmentActivity implements
     private SensorManager mSensorManager;
     private Sensor mOrientation;
     private TimerRunnable timer;
+    private int numOfCameras;
 
 
     @SuppressLint("NewApi")
@@ -146,7 +149,7 @@ public class MirrorActivity extends FragmentActivity implements
         speedometerIndicatorMode = sharedSettings.getInt(PREFS_SPEEDINDICATOR,
                 0);
         //backPressed = false;
-        cameraJustChanged = false;
+//        cameraJustChanged = false;
         systemParameters = getWindow().getAttributes();
         // setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 
@@ -199,8 +202,11 @@ public class MirrorActivity extends FragmentActivity implements
         setSpeedometer();
 
         ToggleButton engineToggleButton = (ToggleButton) findViewById(R.id.engineToggleButton);
-        mirrorCameraCheckBox = (CheckBox) findViewById(R.id.mirrorCameraCheckBox);
-        frontCameraCheckBox = (CheckBox) findViewById(R.id.frontCameraCheckBox);
+//        mirrorCameraCheckBox = (CheckBox) findViewById(R.id.mirrorCameraCheckBox);
+//        frontCameraCheckBox = (CheckBox) findViewById(R.id.frontCameraCheckBox);
+
+        //Seek Bar
+        cameraSeekBar=(SeekBar) findViewById(R.id.cameraSeekBar);
 
         changeTextColors(Color.RED);
         altimiterIndicatorTextView.setText(formatHeight(0.0));
@@ -294,22 +300,6 @@ public class MirrorActivity extends FragmentActivity implements
         // Start Engine Toggle Button
         if (engineToggleButton != null)
             engineToggleButton
-                    // .setOnClickListener(new View.OnClickListener() {
-                    // public void onClick(View view) {
-                    // startEngine= !startEngine;
-                    // if (startEngine) {
-                    // runnableHandlers.postDelayed(idleTimeRunnable, 1000);
-                    // engineToggleButton.setImageDrawable(getResources().getDrawable(R.drawable.green_key));
-                    // changeTextColors(Color.GREEN);
-                    // } else {
-                    // runnableHandlers.removeCallbacks(idleTimeRunnable);
-                    // runnableHandlers.removeCallbacks(drivingTimeRunnable);
-                    // engineToggleButton.setImageDrawable(getResources().getDrawable(R.drawable.red_key));
-                    // changeTextColors(Color.RED);
-                    // wasEngineInactive = true;
-                    // }
-                    // }
-                    // });
                     .setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
                         public void onCheckedChanged(CompoundButton buttonView,
@@ -341,7 +331,48 @@ public class MirrorActivity extends FragmentActivity implements
                     0));
         }
 
-        // Mirror Camera Listener
+        cameraSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int step=(numOfCameras==1)?100:50;
+                progress = ((int)Math.round(progress/step ))*step;
+                seekBar.setProgress(progress);
+                Log.i("Progress ",progress+" fromUser "+fromUser);
+                int newCamera=NO_CAMERA;
+                switch(progress){
+                    case 0:
+                        newCamera=NO_CAMERA;
+                        break;
+                    case 50:
+                        newCamera=MIRROR_CAMERA;
+                        break;
+                    case 100:
+                        newCamera=FRONT_CAMERA;
+                        if(step==100)
+                            newCamera=0;
+                        break;
+                }
+                if(newCamera!=cameraId){
+                    if (mPreview == null) {
+                        initializeCameraPreview(newCamera);
+                    } else {
+                        changeCamera(cameraId, newCamera);
+                    }
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                Log.i("onStartTrackingTouch ", seekBar.getX()+" "+seekBar.getY());
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Log.i("onStartTrackingTouch ", seekBar.getX()+" "+seekBar.getY());
+            }
+        });
+
+        /*// Mirror Camera Listener
         mirrorCameraCheckBox
                 .setOnCheckedChangeListener(new OnCheckedChangeListener() {
                     public void onCheckedChanged(CompoundButton buttonView,
@@ -399,7 +430,7 @@ public class MirrorActivity extends FragmentActivity implements
                             }
                         }
                     }
-                });
+                });*/
 
         // Options Menu ImageView Listener
         optionsMenuImageButton.setOnTouchListener(new View.OnTouchListener() {
@@ -423,7 +454,7 @@ public class MirrorActivity extends FragmentActivity implements
 
         // Add Advertisements
         // Create the adView
-        adView = new AdView(this, AdSize.SMART_BANNER, Keys.AD_MOB_KEY);
+        adView = new AdView(this, AdSize.BANNER, Keys.AD_MOB_KEY);
 
         LinearLayout adsLinearLayout = (LinearLayout) findViewById(R.id.adsLinearLayout);
         // Add the adView to it
@@ -448,8 +479,8 @@ public class MirrorActivity extends FragmentActivity implements
         float smallerDimension;
         if ((metrics.heightPixels == 320 && metrics.widthPixels == 240)
                 || (metrics.heightPixels == 240 && metrics.widthPixels == 320)) {
-            smallerDimension = (metrics.widthPixels / 2 < metrics.heightPixels) ? metrics.widthPixels / 2 - 20
-                    : metrics.heightPixels - 20;
+            smallerDimension = (metrics.widthPixels / 2 < metrics.heightPixels) ? metrics.widthPixels / 2 - 30
+                    : metrics.heightPixels - 30;
         } else if ((metrics.heightPixels == 480 && metrics.widthPixels == 800)
                 || (metrics.heightPixels == 800 && metrics.widthPixels == 480)) {
             smallerDimension = ((2 * metrics.widthPixels) / 3 < metrics.heightPixels) ? (2 * metrics.widthPixels) / 3 - 20
@@ -611,85 +642,100 @@ public class MirrorActivity extends FragmentActivity implements
 
     @SuppressLint("NewApi")
     public void initializeCameraPreview(int lastActiveCamera) {
+        numOfCameras=Camera.getNumberOfCameras();
+        CameraInfo cameraInfo = new CameraInfo();
         // Check number of cameras
-        if (Camera.getNumberOfCameras() == 0) {
-            frontCameraCheckBox.setEnabled(false);
-            mirrorCameraCheckBox.setEnabled(false);
-            cameraId = NO_CAMERA;
-        } else if (Camera.getNumberOfCameras() == 2) {
-            CameraInfo cameraInfo = new CameraInfo();
-            for (int i = 0; i < 2; i++) {
-                Camera.getCameraInfo(i, cameraInfo);
+        switch (numOfCameras){
+            case 0:
+//                frontCameraCheckBox.setEnabled(false);
+//                mirrorCameraCheckBox.setEnabled(false);
+                cameraSeekBar.setEnabled(false);
+                cameraId = NO_CAMERA;
+                break;
+            case 1:
+                Camera.getCameraInfo(0, cameraInfo);
                 if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
-                    MIRROR_CAMERA = i;
+                    FRONT_CAMERA = 0;
+                    MIRROR_CAMERA = 1;
+//                    mirrorCameraCheckBox.setEnabled(false);
+//                    frontCameraCheckBox.setChecked(true);
+                    // Create camera
+                    // Create an instances of Cameras
+                    mCamera = getCameraInstance(0);
+                    cameraId = FRONT_CAMERA;
+
+                    // Create our Previews view and set it as the content of our
+                    // activity.
+                    mPreview = new CameraPreview(this, mCamera);
+                    mPreview.startPreview();
+                    preview.addView(mPreview);
+
+                    cameraSeekBar.setProgress(100);
                 } else {
-                    FRONT_CAMERA = i;
+                    MIRROR_CAMERA = 0;
+                    FRONT_CAMERA = 1;
+//                    mirrorCameraCheckBox.setChecked(true);
+//                    frontCameraCheckBox.setEnabled(false);
+                    // Create camera
+                    // Create an instances of Cameras
+                    mCamera = getCameraInstance(0);
+                    cameraId = MIRROR_CAMERA;
+
+                    // Create our Previews view and set it as the content of our
+                    // activity.
+                    mPreview = new CameraPreview(this, mCamera);
+                    mPreview.startPreview();
+                    preview.addView(mPreview);
+
+                    cameraSeekBar.setProgress(100);
                 }
-            }
-            if (lastActiveCamera == MIRROR_CAMERA
-                    ) {
-                cameraJustChanged = true;
-                mirrorCameraCheckBox.setChecked(true);
-                cameraJustChanged = false;
-                // Create camera
-                // Create an instances of Cameras
-                mCamera = getCameraInstance(MIRROR_CAMERA);
-                cameraId = MIRROR_CAMERA;
+                break;
+            case 2:
+                for (int i = 0; i < 2; i++) {
+                    Camera.getCameraInfo(i, cameraInfo);
+                    if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
+                        MIRROR_CAMERA = i;
+                    } else {
+                        FRONT_CAMERA = i;
+                    }
+                }
+                if (lastActiveCamera == MIRROR_CAMERA
+                        ) {
+//                    cameraJustChanged = true;
+//                    mirrorCameraCheckBox.setChecked(true);
+//                    cameraJustChanged = false;
+                    // Create camera
+                    // Create an instances of Cameras
+                    mCamera = getCameraInstance(MIRROR_CAMERA);
+                    cameraId = MIRROR_CAMERA;
 
-                // Create our Previews view and set it as the content of our
-                // activity.
-                mPreview = new CameraPreview(this, mCamera);
-                mPreview.startPreview();
-                preview.addView(mPreview);
-            } else if (lastActiveCamera == FRONT_CAMERA) {
-                cameraJustChanged = true;
-                frontCameraCheckBox.setChecked(true);
-                cameraJustChanged = false;
-                // Create camera
-                // Create an instances of Cameras
-                mCamera = getCameraInstance(FRONT_CAMERA);
-                cameraId = FRONT_CAMERA;
+                    // Create our Previews view and set it as the content of our
+                    // activity.
+                    mPreview = new CameraPreview(this, mCamera);
+                    mPreview.startPreview();
+                    preview.addView(mPreview);
 
-                // Create our Previews view and set it as the content of our
-                // activity.
-                mPreview = new CameraPreview(this, mCamera);
-                mPreview.startPreview();
-                preview.addView(mPreview);
-            }
-        } else if (Camera.getNumberOfCameras() == 1) {
-            CameraInfo cameraInfo = new CameraInfo();
-            Camera.getCameraInfo(0, cameraInfo);
-            if (cameraInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
-                FRONT_CAMERA = 0;
-                MIRROR_CAMERA = 1;
-                mirrorCameraCheckBox.setEnabled(false);
-                frontCameraCheckBox.setChecked(true);
-                // Create camera
-                // Create an instances of Cameras
-                mCamera = getCameraInstance(0);
-                cameraId = FRONT_CAMERA;
+                    cameraSeekBar.setProgress(50);
 
-                // Create our Previews view and set it as the content of our
-                // activity.
-                mPreview = new CameraPreview(this, mCamera);
-                mPreview.startPreview();
-                preview.addView(mPreview);
-            } else {
-                MIRROR_CAMERA = 0;
-                FRONT_CAMERA = 1;
-                mirrorCameraCheckBox.setChecked(true);
-                frontCameraCheckBox.setEnabled(false);
-                // Create camera
-                // Create an instances of Cameras
-                mCamera = getCameraInstance(0);
-                cameraId = MIRROR_CAMERA;
+                } else if (lastActiveCamera == FRONT_CAMERA) {
+//                    cameraJustChanged = true;
+//                    frontCameraCheckBox.setChecked(true);
+//                    cameraJustChanged = false;
+                    // Create camera
+                    // Create an instances of Cameras
+                    mCamera = getCameraInstance(FRONT_CAMERA);
+                    cameraId = FRONT_CAMERA;
 
-                // Create our Previews view and set it as the content of our
-                // activity.
-                mPreview = new CameraPreview(this, mCamera);
-                mPreview.startPreview();
-                preview.addView(mPreview);
-            }
+                    // Create our Previews view and set it as the content of our
+                    // activity.
+                    mPreview = new CameraPreview(this, mCamera);
+                    mPreview.startPreview();
+                    preview.addView(mPreview);
+
+                    cameraSeekBar.setProgress(100);
+                }
+                break;
+
         }
     }
 

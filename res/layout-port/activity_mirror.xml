@@ -63,6 +63,25 @@
                 android:orientation="vertical"
                 android:layout_weight="1">
 
+                <SeekBar
+                    android:id="@+id/cameraSeekBar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/watchTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.2">
+
                 <TextView
                     android:id="@+id/elapsedTimeLabelTextView"
                     android:layout_width="wrap_content"
@@ -96,7 +115,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_weight="1">
+                android:layout_weight="0.1">
 
                 <ToggleButton
                     android:id="@+id/engineToggleButton"
@@ -105,34 +124,8 @@
                     android:textOff=""
                     android:textOn=""
                     android:background="@drawable/key_toggle_button" />
-
-                <TextView
-                    android:id="@+id/watchTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/zero"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1">
 
-                <CheckBox
-                    android:id="@+id/mirrorCameraCheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/camera_2" />
-
-                <CheckBox
-                    android:id="@+id/frontCameraCheckBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/camera_1"
-                    android:shadowRadius="12"/>
-
-            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/adsLinearLayout"

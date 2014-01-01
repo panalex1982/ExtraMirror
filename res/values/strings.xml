@@ -21,8 +21,8 @@
     <string name="open_speed_plot">Open speed plot</string>
     <string name="stats">Stats</string>
     <string name="open_camera">Open Camera</string>
-    <string name="camera_1">Front Camera</string>
-    <string name="camera_2">Mirror Camera</string>
+    <string name="camera_1">Front</string>
+    <string name="camera_2">Mirror</string>
     <string name="altitude">Αltitude:</string>
     <string name="kilometers">Khm</string>
 
