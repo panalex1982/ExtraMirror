@@ -7,13 +7,13 @@
         android:id="@+id/home_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:baselineAligned="false"
         android:orientation="horizontal" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:layout_weight="5">
 
             <TextView
                 android:id="@+id/elapsedTimeLabelTextView"
@@ -21,11 +21,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="17dp"
                 android:text="@string/elapsed_time" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Test"/>
 
             <TextView
                 android:id="@+id/elapsedTimeTextView"
@@ -48,18 +43,6 @@
                 android:text="@string/zero"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            CheckBox
-                android:id="@+id/mirrorCameraCheckBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/camera_2" />
-
-            CheckBox
-                android:id="@+id/frontCameraCheckBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/camera_1" />
-
             <ToggleButton
                 android:id="@+id/engineToggleButton"
                 android:layout_width="60dp"
@@ -79,15 +62,13 @@
                 android:text="@string/zero"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
-
-
         </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/indicatorsRelativeLayout"
-            android:layout_width="0dip"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2.5" >
+            android:layout_weight="1" >
 
             <FrameLayout
                 android:id="@+id/camera_preview"
@@ -123,12 +104,12 @@
                 android:layout_marginRight="15dp"
                 android:contentDescription="Open Action Bar"
                 android:src="@drawable/menu_moreoverflow_normal_holo_light_rotate_90" />
-            <LinearLayout
-                android:id="@+id/adsLinearLayout"
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true" />
         </RelativeLayout>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/adsLinearLayout"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

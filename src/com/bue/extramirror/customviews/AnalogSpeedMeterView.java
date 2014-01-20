@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.view.View;
 import java.lang.Math;
+import java.text.DecimalFormat;
 
 import com.bue.extramirror.utilities.Utilities;
 
@@ -21,11 +22,14 @@ public class AnalogSpeedMeterView extends View {
 	private float centerX, centerY, radius;
 	private int speed;
 	private float distance;
+    private double altitude;
+    private String movingTime, standingTime;
 	private int digitalSpeedometerColor;
 	private String measureUnit;
+    private int measureUnitTmp;//Change to One measure Unit only int
 	private int speedMeterMode;
 
-	public AnalogSpeedMeterView(Context context, Float viewSize, String measureUnit, int mode) {
+	public AnalogSpeedMeterView(Context context, Float viewSize, int measureUnit, int mode) {
 		super(context);
 		paint=new Paint();
 		canvasSize=viewSize;
@@ -34,8 +38,14 @@ public class AnalogSpeedMeterView extends View {
 		centerY=(canvasSize/2);
 		speed=0;
 		distance=0.0f;
+        movingTime="00:00:00";
+        standingTime="00:00:00";
 		digitalSpeedometerColor=Color.RED;
-		this.measureUnit=measureUnit;
+        if(measureUnit==0)
+            this.measureUnit="Km/h";
+        else
+            this.measureUnit="mph";
+        measureUnitTmp=measureUnit;
 		speedMeterMode=mode;
 	}
 
@@ -205,10 +215,21 @@ public class AnalogSpeedMeterView extends View {
 		paint.setColor(digitalSpeedometerColor);
 		paint.setStrokeWidth(1.0f);
 		paint.setTextSkewX(-0.0f);
-		if(measureUnit.equalsIgnoreCase("Km/h"))
-			canvas.drawText(Integer.toString(speed), centerX, centerY+(radius/6), paint);
-		else if(measureUnit.equalsIgnoreCase("mph"))
-			canvas.drawText(Utilities.convertKilometersToMiles((float)speed, true), centerX, centerY+(radius/6), paint);
+		if(measureUnit.equalsIgnoreCase("Km/h")){
+			canvas.drawText(Integer.toString(speed), centerX, centerY-(radius/10), paint);
+        }
+		else if(measureUnit.equalsIgnoreCase("mph")){
+			canvas.drawText(Utilities.convertKilometersToMiles((float)speed, true), centerX, -(radius/10), paint);
+        }
+
+        paint.setTextSize(radius / 8);
+        paint.setColor(Color.CYAN);
+        canvas.drawText(formatHeight(altitude), centerX, centerY + (radius / 20), paint);
+        paint.setTextSize(radius / 8);
+        paint.setColor(Color.GREEN);
+        canvas.drawText(movingTime, centerX, centerY+(radius/5), paint);
+        paint.setColor(Color.RED);
+        canvas.drawText(standingTime, centerX, centerY+(radius/3), paint);
 	}
 	
 	public void drawDistanceIndicator(Canvas canvas){
@@ -255,16 +276,49 @@ public class AnalogSpeedMeterView extends View {
 				canvas.drawText(Utilities.convertKilometersToMiles((float)speed, true), canvasSize-canvasSize/7, canvasSize-canvasSize/10, paint);
 			}
 			paint.setTextSize(radius/2);
-			canvas.drawText(Utilities.convertMetersToMiles(distance, false), canvasSize-canvasSize/10, canvasSize/5, paint);
+			canvas.drawText(Utilities.convertMetersToMiles(distance, false), canvasSize-canvasSize/10, canvasSize/5,paint);
 			distanceMesureUnit="mi.";
 		}
+
+        //Altimeter
+        paint.setTextAlign(Align.CENTER);
+        paint.setTextSize(radius / 6);
+        paint.setColor(Color.CYAN);
+        canvas.drawText(formatHeight(altitude), canvasSize / 5, canvasSize / 15, paint);;
+
+        //Timers
+        paint.setColor(Color.GREEN);
+        canvas.drawText(movingTime, canvasSize/5, canvasSize/7, paint);
+        paint.setColor(Color.RED);
+        canvas.drawText(standingTime, canvasSize/5, canvasSize/4.5f, paint);
 		paint.setTextSize(radius/8);
+
+        //Distance Unit
+        paint.setColor(digitalSpeedometerColor);
 		paint.setTextAlign(Align.LEFT);
 		canvas.drawText(measureUnit, canvasSize-canvasSize/7, canvasSize-canvasSize/10, paint);
 		paint.setTextSize(radius/10);
 		canvas.drawText(distanceMesureUnit, canvasSize-canvasSize/10, canvasSize/5, paint);
+
 		
 	}
+
+    private String formatHeight(double heightMeters) {
+        String height = "Unknown";
+        switch (measureUnitTmp) {
+            case 0:
+                String heightMetersText = " m";
+                DecimalFormat df = new DecimalFormat("#.#");
+                height = df.format(heightMeters) + heightMetersText;
+                break;
+            case 1:
+                String heightMilesText = " ft";
+                DecimalFormat dfm = new DecimalFormat("#.#");
+                height = dfm.format(heightMeters * 3.2808) + heightMilesText;
+                break;
+        }
+        return height;
+    }
 
 	public void setSpeed(int speed) {
 		this.speed = (int)Utilities.convertMetersToKhm(speed);
@@ -276,8 +330,11 @@ public class AnalogSpeedMeterView extends View {
 		invalidate();
 	}
 
-	public void setMeasureUnit(String measureUnit) {
-		this.measureUnit = measureUnit;
+	public void setMeasureUnit(int measureUnit) {
+        if(measureUnit==0)
+            this.measureUnit="Km/h";
+        else
+            this.measureUnit="mph";
 		invalidate();
 	}
 
@@ -285,11 +342,21 @@ public class AnalogSpeedMeterView extends View {
 		digitalSpeedometerColor=color;
 		invalidate();		
 	}
-	
-	public void changeMode(int mode){
+
+    public void setTimers(String standingTime, String movingTime) {
+        this.standingTime = standingTime;
+        this.movingTime = movingTime;
+        invalidate();
+    }
+
+    public void changeMode(int mode){
 		this.speedMeterMode=mode;
 		invalidate();
 	}
-	
-	
+
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
+        invalidate();
+    }
 }

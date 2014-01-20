@@ -90,13 +90,10 @@ public class MirrorActivity extends FragmentActivity implements
     private float brightness;
     private int speedometerIndicatorMode;
     //private boolean backPressed;
-//    protected boolean cameraJustChanged;
+    //protected boolean cameraJustChanged;
 
     private int speed;
-    protected long idleTime;
-    protected long drivingTime;
     private float speedms;
-    protected float distance;
     private double altitude;
     private boolean startEngine;
     private boolean wasEngineInactive;
@@ -140,6 +137,9 @@ public class MirrorActivity extends FragmentActivity implements
 
 //        Intent intent = new Intent(this, ExtraMirrorService.class);
 //        startService(intent);
+        //Temp variables
+        long idleTime, drivingTime;
+        float distance;
 
         // Retrieve Saved Settings
         sharedSettings = getSharedPreferences(PREFS_NAME, 0);
@@ -188,12 +188,8 @@ public class MirrorActivity extends FragmentActivity implements
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         float smallerDimension=calculateSpeedmeterSize(metrics);
-        if (measureUnit == 0)
-            analogSpeedMeter = new AnalogSpeedMeterView(this, smallerDimension,
-                    "Km/h", speedometerIndicatorMode);
-        else
-            analogSpeedMeter = new AnalogSpeedMeterView(this, smallerDimension,
-                    "mph", speedometerIndicatorMode);
+        analogSpeedMeter = new AnalogSpeedMeterView(this, smallerDimension,
+                    measureUnit, speedometerIndicatorMode);
         LayoutParams lpAnalogSpeedMeter = new LayoutParams((int) smallerDimension,
                 (int) smallerDimension);
         lpAnalogSpeedMeter.setMargins(5, 20, 50, 5);
@@ -224,6 +220,7 @@ public class MirrorActivity extends FragmentActivity implements
                     .getBoolean(ENGINE_PREVIOUS_STATE);
             elapsedTimeTextView.setText(clock.convertTime(drivingTime));
             idleTimeTextView.setText(clock.convertTime(idleTime));
+            updateSpeedometer(distance);
         }else {
             idleTime = 0l;
             drivingTime = 0l;
@@ -239,7 +236,7 @@ public class MirrorActivity extends FragmentActivity implements
         runnableHandlers = new Handler();
 
         timer=new TimerRunnable(runnableHandlers, watchTextView, elapsedTimeTextView,
-                idleTimeTextView, drivingTime, idleTime, distance);
+                idleTimeTextView, analogSpeedMeter, drivingTime, idleTime, distance);
         runnableHandlers.post(timer);
         locationManager = (LocationManager) this
                 .getSystemService(Context.LOCATION_SERVICE);
@@ -257,7 +254,6 @@ public class MirrorActivity extends FragmentActivity implements
                 altitude = location.getAltitude();
 //                latitude = location.getLatitude();
 //                longitude = location.getLongitude();
-
                 updateSpeedometer(timer.getDistance());
 
                 altimiterIndicatorTextView.setText(formatHeight(altitude));
@@ -468,7 +464,7 @@ public class MirrorActivity extends FragmentActivity implements
         // Initiate a generic request to load it with an ad
         AdRequest adRequest = new AdRequest();
         adRequest.addTestDevice(AdRequest.TEST_EMULATOR); // Emulator
-        // adRequest.addTestDevice("TEST_DEVICE_ID"); // Test Android Device
+        adRequest.addTestDevice(Keys.SONY_DEVICE_ID); // Test Android Device
         adView.loadAd(adRequest);
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -574,6 +570,7 @@ public class MirrorActivity extends FragmentActivity implements
             mCamera.release();
         }
         SharedPreferences.Editor editor = sharedSettings.edit();
+        cameraId=cameraId!=NO_CAMERA?cameraId:0;
         editor.putInt(PREFS_ACTIVE_CAMERA, cameraId);
         editor.commit();
         getWindow().setAttributes(systemParameters);// Set System Screen
@@ -609,7 +606,7 @@ public class MirrorActivity extends FragmentActivity implements
     protected void onSaveInstanceState(Bundle outState) {
         outState.putLong(IDLE_TIME, timer.getIdleTime());//idleTime);
         outState.putLong(DRIVING_TIME, timer.getDrivingTime());//drivingTime);
-        outState.putFloat(DRIVING_DISTANCE, distance);
+        outState.putFloat(DRIVING_DISTANCE, timer.getDistance());
         outState.putBoolean(ENGINE_STATE, startEngine);
         outState.putBoolean(ENGINE_PREVIOUS_STATE, wasEngineInactive);
         outState.putBoolean(STATE_PAUSED_AT_MAIN, true);
@@ -774,6 +771,12 @@ public class MirrorActivity extends FragmentActivity implements
         analogSpeedMeter.setDigitalSpeedometerColor(color);
     }
 
+    /**
+     *
+     * @param heightMeters
+     * @return
+     * @deprecated
+     */
     private String formatHeight(double heightMeters) {
         String height = "Unknown";
         switch (measureUnit) {
@@ -818,6 +821,7 @@ public class MirrorActivity extends FragmentActivity implements
     private void updateSpeedometer(float distance) {
         analogSpeedMeter.setSpeed(speed);
         analogSpeedMeter.setDistance(distance);
+        analogSpeedMeter.setAltitude(altitude);
     }
 
 //    private void updateDistance(float distance) {
@@ -844,25 +848,12 @@ public class MirrorActivity extends FragmentActivity implements
         setSpeedometer();
         boolean showIntro = settings.isShowIntro();
         editor.putBoolean(PREFS_SHOW_INTRO, showIntro);
+
         measureUnit = settings.getMeasureUnit();
-        switch (measureUnit) {
-            case 0:
-                analogSpeedMeter.setMeasureUnit("Km/h");
-                updateSpeedometer(timer.getDistance());
-                editor.putInt(PREFS_MEASURE_UNIT, 0);
-                editor.commit();
-                break;
-            case 1:
-                analogSpeedMeter.setMeasureUnit("mph");
-                updateSpeedometer(timer.getDistance());
-                editor.putInt(PREFS_MEASURE_UNIT, 1);
-                editor.commit();
-                break;
-            default:
-                editor.putInt(PREFS_MEASURE_UNIT, 0);
-                editor.commit();
-                break;
-        }
+        analogSpeedMeter.setMeasureUnit(measureUnit);
+        updateSpeedometer(timer.getDistance());
+        editor.putInt(PREFS_MEASURE_UNIT, measureUnit);
+        editor.commit();
 
         this.altimiterIndicatorTextView.setText(formatHeight(altitude));
 
@@ -879,7 +870,7 @@ public class MirrorActivity extends FragmentActivity implements
         float roll_angle = sensorEvent.values[2];
         if(prv_roll_angle==1000)
             prv_roll_angle=roll_angle;
-        if(roll_angle>60 || roll_angle<-60){
+        if(roll_angle>70 || roll_angle<-70){
             if(Math.abs(prv_roll_angle-roll_angle)>100){
                 if(cameraId!=NO_CAMERA)
                    changeCamera(cameraId,cameraId);

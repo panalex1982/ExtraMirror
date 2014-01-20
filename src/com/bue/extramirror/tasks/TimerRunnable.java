@@ -1,5 +1,6 @@
 package com.bue.extramirror.tasks;
 
+import com.bue.extramirror.customviews.AnalogSpeedMeterView;
 import com.bue.extramirror.utilities.Clock;
 
 import android.os.Handler;
@@ -16,6 +17,7 @@ public class TimerRunnable implements Runnable{
     private TextView watchTextView,
             movingTimeTextView,
             standingTimeTextView;
+    private AnalogSpeedMeterView speedMeterView;
     //motionState 0: no state, 1: standing, 2: moving
     private int motionState;
     private long drivingTime,
@@ -24,6 +26,7 @@ public class TimerRunnable implements Runnable{
                    speedms;
 
     public TimerRunnable(Handler handler, TextView watchTextView, TextView movingTimeTextView, TextView standingTimeTextView,
+                         AnalogSpeedMeterView speedMeterView,
                          long drivingTime, long idleTime, float distance){
         now = new Time();
         motionState=0;
@@ -34,6 +37,7 @@ public class TimerRunnable implements Runnable{
         this.drivingTime=drivingTime;
         this.idleTime=idleTime;
         this.distance=distance;
+        this.speedMeterView=speedMeterView;
         speedms=0.0f;
     }
 
@@ -59,13 +63,17 @@ public class TimerRunnable implements Runnable{
         switch(motionState){
             case 1:
                 idleTime += 1000;
-                if(standingTimeTextView!=null)
+                if(standingTimeTextView!=null){
                     standingTimeTextView.setText(clock.convertTime(idleTime));
+                    speedMeterView.setTimers(clock.convertTime(idleTime), clock.convertTime(drivingTime));
+                }
                 break;
             case 2:
                 drivingTime += 1000;
-                if(standingTimeTextView!=null)
+                if(standingTimeTextView!=null){
                     movingTimeTextView.setText(clock.convertTime(drivingTime));
+                    speedMeterView.setTimers(clock.convertTime(idleTime), clock.convertTime(drivingTime));
+                }
                 distance += speedms;
                 break;
         }
@@ -103,4 +111,6 @@ public class TimerRunnable implements Runnable{
     public float getDistance() {
         return distance;
     }
+
+
 }
