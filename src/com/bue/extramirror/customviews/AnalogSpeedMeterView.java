@@ -288,7 +288,7 @@ public class AnalogSpeedMeterView extends View {
         paint.setTextAlign(Align.CENTER);
         paint.setTextSize(radius / 6);
         paint.setColor(Color.LTGRAY);
-        canvas.drawText(formatHeight(altitude), canvasSize / 5, canvasSize / 15, paint);;
+        canvas.drawText(formatHeight(altitude), canvasSize / 5, canvasSize / 15, paint);
 
         //Timers
         canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), trafficLight),canvasSize/2.5f,canvasSize/10,paint);
