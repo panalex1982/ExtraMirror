@@ -2,22 +2,23 @@ package com.bue.extramirror.customviews;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.view.View;
 import java.lang.Math;
 import java.text.DecimalFormat;
 
+import com.bue.extramirror.R;
 import com.bue.extramirror.utilities.Utilities;
 
 public class AnalogSpeedMeterView extends View {
-	private Paint paint;
+    private Paint paint;
 	private float canvasSize;
 	private float centerX, centerY, radius;
 	private int speed;
@@ -28,6 +29,7 @@ public class AnalogSpeedMeterView extends View {
 	private String measureUnit;
     private int measureUnitTmp;//Change to One measure Unit only int
 	private int speedMeterMode;
+    private int trafficLight;
 
 	public AnalogSpeedMeterView(Context context, Float viewSize, int measureUnit, int mode) {
 		super(context);
@@ -47,6 +49,7 @@ public class AnalogSpeedMeterView extends View {
             this.measureUnit="mph";
         measureUnitTmp=measureUnit;
 		speedMeterMode=mode;
+        trafficLight=R.drawable.traffic_lights_red;
 	}
 
 	@SuppressLint("DrawAllocation")
@@ -223,13 +226,14 @@ public class AnalogSpeedMeterView extends View {
         }
 
         paint.setTextSize(radius / 8);
-        paint.setColor(Color.CYAN);
+        paint.setColor(Color.LTGRAY);
         canvas.drawText(formatHeight(altitude), centerX, centerY + (radius / 20), paint);
         paint.setTextSize(radius / 8);
-        paint.setColor(Color.GREEN);
-        canvas.drawText(movingTime, centerX, centerY+(radius/5), paint);
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), trafficLight),centerX-(radius/3.3f),centerY+(radius/9),paint);
         paint.setColor(Color.RED);
-        canvas.drawText(standingTime, centerX, centerY+(radius/3), paint);
+        canvas.drawText(standingTime, centerX+(radius/14), centerY+(radius/5), paint);
+        paint.setColor(Color.GREEN);
+        canvas.drawText(movingTime, centerX+(radius/14), centerY+(radius/3), paint);
 	}
 	
 	public void drawDistanceIndicator(Canvas canvas){
@@ -283,14 +287,15 @@ public class AnalogSpeedMeterView extends View {
         //Altimeter
         paint.setTextAlign(Align.CENTER);
         paint.setTextSize(radius / 6);
-        paint.setColor(Color.CYAN);
+        paint.setColor(Color.LTGRAY);
         canvas.drawText(formatHeight(altitude), canvasSize / 5, canvasSize / 15, paint);;
 
         //Timers
-        paint.setColor(Color.GREEN);
-        canvas.drawText(movingTime, canvasSize/5, canvasSize/7, paint);
+        canvas.drawBitmap(BitmapFactory.decodeResource(getResources(), trafficLight),canvasSize/2.5f,canvasSize/10,paint);
         paint.setColor(Color.RED);
-        canvas.drawText(standingTime, canvasSize/5, canvasSize/4.5f, paint);
+        canvas.drawText(standingTime, canvasSize/5, canvasSize/7, paint);
+        paint.setColor(Color.GREEN);
+        canvas.drawText(movingTime, canvasSize/5, canvasSize/4.5f, paint);
 		paint.setTextSize(radius/8);
 
         //Distance Unit
@@ -343,7 +348,21 @@ public class AnalogSpeedMeterView extends View {
 		invalidate();		
 	}
 
-    public void setTimers(String standingTime, String movingTime) {
+    /**
+     *
+     * @param standingTime
+     * @param movingTime
+     * @param mode 1 if vehile is standing, 2 if moving
+     */
+    public void setTimers(String standingTime, String movingTime, int mode) {
+        switch (mode){
+            case 1:
+                trafficLight=R.drawable.traffic_lights_red;
+                break;
+            case 2:
+                trafficLight=R.drawable.traffic_lights_green;
+                break;
+        }
         this.standingTime = standingTime;
         this.movingTime = movingTime;
         invalidate();

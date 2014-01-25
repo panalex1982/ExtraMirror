@@ -102,8 +102,6 @@ public class MirrorActivity extends FragmentActivity implements
     private ActionBar actionBar;
     private FrameLayout preview;
 
-    private TextView altimiterLabelTextView;
-    private TextView altimiterIndicatorTextView;
     private AnalogSpeedMeterView analogSpeedMeter;
     private ImageView optionsMenuImageButton;
 
@@ -169,10 +167,6 @@ public class MirrorActivity extends FragmentActivity implements
         setBrightness();
         setEnergySaving();
 
-        TextView elapsedTimeTextView = (TextView) findViewById(R.id.elapsedTimeTextView);
-        TextView idleTimeTextView = (TextView) findViewById(R.id.idleTimeTextView);
-        altimiterIndicatorTextView = (TextView) findViewById(R.id.altimiterIndicatorTextView);
-        altimiterLabelTextView = (TextView) findViewById(R.id.altimiterLabelTextView);
         TextView watchTextView = (TextView) findViewById(R.id.watchTextView);
         preview = (FrameLayout) findViewById(R.id.camera_preview);
         RelativeLayout indicatorsRelativeLayout = (RelativeLayout) findViewById(R.id.indicatorsRelativeLayout);
@@ -205,10 +199,7 @@ public class MirrorActivity extends FragmentActivity implements
         cameraSeekBar=(SeekBar) findViewById(R.id.cameraSeekBar);
 
         changeTextColors(Color.RED);
-        altimiterIndicatorTextView.setText(formatHeight(0.0));
         Clock clock = new Clock();
-        elapsedTimeTextView.setText(clock.convertTime(0l));
-        idleTimeTextView.setText(clock.convertTime(0l));
 
         // Initialize Parameters
         if (savedInstanceState != null) {
@@ -218,8 +209,6 @@ public class MirrorActivity extends FragmentActivity implements
             startEngine = savedInstanceState.getBoolean(ENGINE_STATE);
             wasEngineInactive = savedInstanceState
                     .getBoolean(ENGINE_PREVIOUS_STATE);
-            elapsedTimeTextView.setText(clock.convertTime(drivingTime));
-            idleTimeTextView.setText(clock.convertTime(idleTime));
             updateSpeedometer(distance);
         }else {
             idleTime = 0l;
@@ -235,8 +224,7 @@ public class MirrorActivity extends FragmentActivity implements
 
         runnableHandlers = new Handler();
 
-        timer=new TimerRunnable(runnableHandlers, watchTextView, elapsedTimeTextView,
-                idleTimeTextView, analogSpeedMeter, drivingTime, idleTime, distance);
+        timer=new TimerRunnable(runnableHandlers, watchTextView, analogSpeedMeter, drivingTime, idleTime, distance);
         runnableHandlers.post(timer);
         locationManager = (LocationManager) this
                 .getSystemService(Context.LOCATION_SERVICE);
@@ -256,7 +244,6 @@ public class MirrorActivity extends FragmentActivity implements
 //                longitude = location.getLongitude();
                 updateSpeedometer(timer.getDistance());
 
-                altimiterIndicatorTextView.setText(formatHeight(altitude));
                 if (startEngine) {
                     if (speed == 0) {
                         //timer.closeEngine();
@@ -766,8 +753,6 @@ public class MirrorActivity extends FragmentActivity implements
     }
 
     private void changeTextColors(int color) {
-        altimiterLabelTextView.setTextColor(color);
-        altimiterIndicatorTextView.setTextColor(color);
         analogSpeedMeter.setDigitalSpeedometerColor(color);
     }
 
@@ -854,9 +839,6 @@ public class MirrorActivity extends FragmentActivity implements
         updateSpeedometer(timer.getDistance());
         editor.putInt(PREFS_MEASURE_UNIT, measureUnit);
         editor.commit();
-
-        this.altimiterIndicatorTextView.setText(formatHeight(altitude));
-
     }
 
     public void onDialogNegativeClick(DialogFragment dialog) {

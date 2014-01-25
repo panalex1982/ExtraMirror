@@ -14,9 +14,7 @@ import android.widget.TextView;
 public class TimerRunnable implements Runnable{
     private Handler handler;
     private Time now;
-    private TextView watchTextView,
-            movingTimeTextView,
-            standingTimeTextView;
+    private TextView watchTextView;
     private AnalogSpeedMeterView speedMeterView;
     //motionState 0: no state, 1: standing, 2: moving
     private int motionState;
@@ -25,15 +23,12 @@ public class TimerRunnable implements Runnable{
     private float distance,
                    speedms;
 
-    public TimerRunnable(Handler handler, TextView watchTextView, TextView movingTimeTextView, TextView standingTimeTextView,
-                         AnalogSpeedMeterView speedMeterView,
+    public TimerRunnable(Handler handler, TextView watchTextView, AnalogSpeedMeterView speedMeterView,
                          long drivingTime, long idleTime, float distance){
         now = new Time();
         motionState=0;
         this.handler=handler;
         this.watchTextView=watchTextView;
-        this.movingTimeTextView=movingTimeTextView;
-        this.standingTimeTextView=standingTimeTextView;
         this.drivingTime=drivingTime;
         this.idleTime=idleTime;
         this.distance=distance;
@@ -46,8 +41,7 @@ public class TimerRunnable implements Runnable{
         motionState=0;
         this.handler=handler;
         this.watchTextView=null;
-        this.movingTimeTextView=null;
-        this.standingTimeTextView=null;
+        this.speedMeterView=null;
         this.drivingTime=drivingTime;
         this.idleTime=idleTime;
         this.distance=distance;
@@ -57,28 +51,25 @@ public class TimerRunnable implements Runnable{
     @Override
     public void run() {
         now.setToNow();
-        if(standingTimeTextView!=null)
+        if(speedMeterView!=null)
             watchTextView.setText(now.format("%k:%M|%d-%m-%Y"));
-        Clock clock = new Clock();
         switch(motionState){
             case 1:
                 idleTime += 1000;
-                if(standingTimeTextView!=null){
-                    standingTimeTextView.setText(clock.convertTime(idleTime));
-                    speedMeterView.setTimers(clock.convertTime(idleTime), clock.convertTime(drivingTime));
+                if(speedMeterView!=null){
+                    speedMeterView.setTimers(Clock.convertTime(idleTime), Clock.convertTime(drivingTime), motionState);
                 }
                 break;
             case 2:
                 drivingTime += 1000;
-                if(standingTimeTextView!=null){
-                    movingTimeTextView.setText(clock.convertTime(drivingTime));
-                    speedMeterView.setTimers(clock.convertTime(idleTime), clock.convertTime(drivingTime));
+                if(speedMeterView!=null){
+                    speedMeterView.setTimers(Clock.convertTime(idleTime), Clock.convertTime(drivingTime), motionState);
                 }
                 distance += speedms;
                 break;
         }
         handler.postDelayed(this,1000);
-        if(standingTimeTextView==null)
+        if(speedMeterView==null)
             Log.i("Moving/Standing Service:", drivingTime + "/" + idleTime);
         else
             Log.i("Moving/Standing:", drivingTime + "/" + idleTime);
@@ -86,6 +77,8 @@ public class TimerRunnable implements Runnable{
 
     public void closeEngine(){
         motionState=0;
+        if(speedMeterView!=null)
+            speedMeterView.setTimers(Clock.convertTime(idleTime), Clock.convertTime(drivingTime),1);
     }
 
     public void stopMoving(){

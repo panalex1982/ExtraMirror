@@ -15,34 +15,6 @@
             android:orientation="vertical"
             android:layout_weight="5">
 
-            <TextView
-                android:id="@+id/elapsedTimeLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="17dp"
-                android:text="@string/elapsed_time" />
-
-            <TextView
-                android:id="@+id/elapsedTimeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/zero"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/idleTimeLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/idle_time"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/idleTimeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/zero"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
             <ToggleButton
                 android:id="@+id/engineToggleButton"
                 android:layout_width="60dp"
@@ -76,24 +48,6 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true" >
             </FrameLayout>
-
-            <TextView
-                android:id="@+id/altimiterLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="16dp"
-                android:text="@string/altitude"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            <TextView
-                android:id="@+id/altimiterIndicatorTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/altimiterLabelTextView"
-                android:text="@string/zero"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <ImageView
                 android:id="@+id/optionsMenuImageButton"

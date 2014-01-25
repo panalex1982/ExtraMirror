@@ -1,18 +1,21 @@
 package com.bue.extramirror.utilities;
 
 public class Clock {
-	private long hours, minutes, seconds;
+	/*private long hours, minutes, seconds;
 
 	public Clock() {
 		super();
 		hours=0;
 		minutes=0;
 		seconds=0;
-	}
+	}*/
 	
-	public String convertTime(Long miliseconds){
+	public static String convertTime(Long miliseconds){
 		String time="";
-		seconds=miliseconds/1000;
+		long seconds,minutes,hours;
+        minutes=0;
+        hours=0;
+        seconds=miliseconds/1000;
 		if(seconds>59){
 			minutes=seconds/60;
 			seconds=seconds%60;

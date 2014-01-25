@@ -97,8 +97,8 @@ public class IntroActivity extends FragmentActivity implements ExtraMirrorShared
 			
 						    // Initiate a generic request to load it with an ad
 							AdRequest adRequest = new AdRequest();
-							//adRequest.addTestDevice(AdRequest.TEST_EMULATOR);               // Emulator
-							//adRequest.addTestDevice("TEST_DEVICE_ID");                      // Test Android Device
+                            adRequest.addTestDevice(AdRequest.TEST_EMULATOR); // Emulator
+                            adRequest.addTestDevice(Keys.SONY_DEVICE_ID); // Test Android Device                    // Test Android Device
 						    adView.loadAd(adRequest);
 				}else if(isPausedAtMain){
 					openMainApplication();					
