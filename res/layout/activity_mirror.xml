@@ -22,10 +22,13 @@
                 android:textOff=""
                 android:textOn=""
                 android:background="@drawable/key_toggle_button" />
-            <SeekBar
-                android:id="@+id/cameraSeekBar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+            <ToggleButton
+                android:id="@+id/cameraToggleButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:textOff=""
+                android:textOn=""
+                android:background="@drawable/camera_toggle_button"/>
 
             <TextView
                 android:id="@+id/watchTextView"
