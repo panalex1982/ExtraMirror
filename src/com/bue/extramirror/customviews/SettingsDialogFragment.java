@@ -26,11 +26,13 @@ import android.widget.Spinner;
 
 
 public class SettingsDialogFragment extends DialogFragment implements ExtraMirrorSharedPreferences {
-	
-	
-	/* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
+
+
+
+
+    /* The activity that creates an instance of this dialog fragment must
+         * implement this interface in order to receive event callbacks.
+         * Each method passes the DialogFragment in case the host needs to query it. */
     public interface SettingsDialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
         public void onDialogNegativeClick(DialogFragment dialog);
@@ -44,12 +46,14 @@ public class SettingsDialogFragment extends DialogFragment implements ExtraMirro
 	private float brightness;
 	private int speedometerIndicatorMode;
 	private boolean showIntro;
+    private boolean isCameraEnabled;
 	
 	private Spinner measureUnitsSettingsSpinner;
 	private Spinner speedometerModeSettingsSpinner;
 	private SeekBar brightnessSettingsSeekBar;
 	private CheckBox energySavingSettingsCheckBox;
 	private CheckBox showIntroSettingsCheckBox;
+    private CheckBox enableCameraSettingsCheckBox;
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class SettingsDialogFragment extends DialogFragment implements ExtraMirro
 		energySaving=settings.getBoolean(PREFS_ENERGY_SAVING, false);
 		speedometerIndicatorMode=settings.getInt(PREFS_SPEEDINDICATOR, 0);
 		showIntro=settings.getBoolean(PREFS_SHOW_INTRO, true);
+        isCameraEnabled=settings.getBoolean(PREFS_CAMERA_ENABLED, true);
 		
 		//Create main dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -143,6 +148,17 @@ public class SettingsDialogFragment extends DialogFragment implements ExtraMirro
 			}
 			
 		});
+
+        //Define enable camera check box
+        enableCameraSettingsCheckBox=(CheckBox) dialogMainView.findViewById(R.id.enableCameraSettingsCheckBox);
+        enableCameraSettingsCheckBox.setChecked(isCameraEnabled);
+        enableCameraSettingsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                isCameraEnabled=isChecked;
+            }
+        });
+
 		
 		//Define Speedometer Mode Spinner
 		speedometerModeSettingsSpinner=(Spinner) dialogMainView.findViewById(R.id.speedometerModeSettingsSpinner);
@@ -218,6 +234,8 @@ public class SettingsDialogFragment extends DialogFragment implements ExtraMirro
 	public boolean isShowIntro() {
 		return showIntro;
 	}
-	
-	
+
+    public boolean isCameraEnabled() {
+        return isCameraEnabled;
+    }
 }

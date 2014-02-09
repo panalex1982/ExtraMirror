@@ -50,5 +50,7 @@
     <string name="show_intro">Zoom Instructions</string>
     <string name="enable_intro">check to show instructions window</string>
     <string name="hide_action_bar">Hide Action Bar</string>
+    <string name="enable_camera">Enable Camera</string>
+    <string name="enable_camera_info">camera will be enabled next time you open the application.</string>
 
 </resources>

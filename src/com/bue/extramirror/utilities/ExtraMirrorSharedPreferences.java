@@ -8,6 +8,7 @@ public interface ExtraMirrorSharedPreferences {
 	public final String PREFS_SPEEDINDICATOR="SpeedIndicator";
 	public final String PREFS_SHOW_INTRO="ShowIntro";
 	public final String PREFS_ACTIVE_CAMERA="LastActiveCamera";
+    public final String PREFS_CAMERA_ENABLED="isCameraEnabled";
 	//public final String PREFS_PAUSED_ACTIVITY="PausedActivity";
 	
 	public final String STATE_PAUSED_AT_MAIN="PausedAtMain";

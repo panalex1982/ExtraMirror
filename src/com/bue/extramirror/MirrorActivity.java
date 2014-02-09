@@ -89,6 +89,8 @@ public class MirrorActivity extends FragmentActivity implements
     private boolean energySaving;
     private float brightness;
     private int speedometerIndicatorMode;
+    private boolean isCameraEnabled;
+    private boolean wasCameraEnabled;//was enabled when activity started first time
     //private boolean backPressed;
     //protected boolean cameraJustChanged;
 
@@ -123,6 +125,7 @@ public class MirrorActivity extends FragmentActivity implements
     private int numOfCameras;
 
 
+
     @SuppressLint("NewApi")
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -146,6 +149,8 @@ public class MirrorActivity extends FragmentActivity implements
         energySaving = sharedSettings.getBoolean(PREFS_ENERGY_SAVING, false);
         speedometerIndicatorMode = sharedSettings.getInt(PREFS_SPEEDINDICATOR,
                 0);
+        isCameraEnabled=sharedSettings.getBoolean(PREFS_CAMERA_ENABLED,true);
+        wasCameraEnabled=isCameraEnabled;
         //backPressed = false;
 //        cameraJustChanged = false;
         systemParameters = getWindow().getAttributes();
@@ -306,114 +311,114 @@ public class MirrorActivity extends FragmentActivity implements
                         }
 
                     });
+        if(isCameraEnabled){
+            cameraId = NO_CAMERA;
+            //Initializes the camera preview if exist
+            if (mPreview == null) {
+                initializeCameraPreview(sharedSettings.getInt(PREFS_ACTIVE_CAMERA,
+                        0));
+            }
 
-        cameraId = NO_CAMERA;
-        //Initializes the camera preview if exist
-        if (mPreview == null) {
-            initializeCameraPreview(sharedSettings.getInt(PREFS_ACTIVE_CAMERA,
-                    0));
+            cameraSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    int step=(numOfCameras==1)?0:100;
+                    progress = ((int)Math.round(progress/step ))*step;
+                    seekBar.setProgress(progress);
+                    Log.i("Progress ",progress+" fromUser "+fromUser);
+                    int newCamera=NO_CAMERA;
+                    switch(progress){
+                        case 100:
+                            newCamera=MIRROR_CAMERA;
+                            break;
+                        case 0:
+                            newCamera=FRONT_CAMERA;
+                            if(step==0)
+                                newCamera=0;
+                            break;
+                    }
+                    if(newCamera!=cameraId){
+                        if (mPreview == null) {
+                            initializeCameraPreview(newCamera);
+                        } else {
+                            changeCamera(cameraId, newCamera);
+                        }
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    Log.i("onStartTrackingTouch ", seekBar.getX()+" "+seekBar.getY());
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    Log.i("onStartTrackingTouch ", seekBar.getX()+" "+seekBar.getY());
+                }
+            });
+
+            /*// Mirror Camera Listener
+            mirrorCameraCheckBox
+                    .setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                        public void onCheckedChanged(CompoundButton buttonView,
+                                                     boolean isChecked) {
+                            if (mPreview == null) {
+                                initializeCameraPreview(MIRROR_CAMERA);
+                            } else {
+                                if (cameraJustChanged) {
+                                    cameraJustChanged = false;
+                                } else {
+                                    int newCamera = MIRROR_CAMERA;
+                                    if (isChecked) {
+                                        changeCamera(cameraId, newCamera);
+                                        cameraJustChanged = true;
+                                        if (frontCameraCheckBox.isChecked()) {
+                                            frontCameraCheckBox.setChecked(false);
+                                        } else
+                                            cameraJustChanged = false;
+                                    } else {
+                                        newCamera = NO_CAMERA;
+                                        changeCamera(cameraId, newCamera);
+                                    }
+                                }
+                            }
+                        }
+
+
+                    });
+
+            // Front Camera Listener
+
+            frontCameraCheckBox
+                    .setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+                        public void onCheckedChanged(CompoundButton buttonView,
+                                                     boolean isChecked) {
+                            if (mPreview == null) {
+                                initializeCameraPreview(FRONT_CAMERA);
+                            } else {
+                                if (cameraJustChanged) {
+                                    cameraJustChanged = false;
+                                } else {
+                                    int newCamera = FRONT_CAMERA;
+                                    if (isChecked) {
+                                        changeCamera(cameraId, newCamera);
+                                        cameraJustChanged = true;
+                                        if (mirrorCameraCheckBox.isChecked()) {
+                                            mirrorCameraCheckBox.setChecked(false);
+                                        } else
+                                            cameraJustChanged = false;
+                                    } else {
+                                        newCamera = NO_CAMERA;
+                                        changeCamera(cameraId, newCamera);
+                                    }
+                                }
+                            }
+                        }
+                    });*/
+        }else{
+            cameraSeekBar.setEnabled(false);
         }
-
-        cameraSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int step=(numOfCameras==1)?100:50;
-                progress = ((int)Math.round(progress/step ))*step;
-                seekBar.setProgress(progress);
-                Log.i("Progress ",progress+" fromUser "+fromUser);
-                int newCamera=NO_CAMERA;
-                switch(progress){
-                    case 0:
-                        newCamera=NO_CAMERA;
-                        break;
-                    case 100:
-                        newCamera=MIRROR_CAMERA;
-                        break;
-                    case 50:
-                        newCamera=FRONT_CAMERA;
-                        if(step==100)
-                            newCamera=0;
-                        break;
-                }
-                if(newCamera!=cameraId){
-                    if (mPreview == null) {
-                        initializeCameraPreview(newCamera);
-                    } else {
-                        changeCamera(cameraId, newCamera);
-                    }
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                Log.i("onStartTrackingTouch ", seekBar.getX()+" "+seekBar.getY());
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Log.i("onStartTrackingTouch ", seekBar.getX()+" "+seekBar.getY());
-            }
-        });
-
-        /*// Mirror Camera Listener
-        mirrorCameraCheckBox
-                .setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                    public void onCheckedChanged(CompoundButton buttonView,
-                                                 boolean isChecked) {
-                        if (mPreview == null) {
-                            initializeCameraPreview(MIRROR_CAMERA);
-                        } else {
-                            if (cameraJustChanged) {
-                                cameraJustChanged = false;
-                            } else {
-                                int newCamera = MIRROR_CAMERA;
-                                if (isChecked) {
-                                    changeCamera(cameraId, newCamera);
-                                    cameraJustChanged = true;
-                                    if (frontCameraCheckBox.isChecked()) {
-                                        frontCameraCheckBox.setChecked(false);
-                                    } else
-                                        cameraJustChanged = false;
-                                } else {
-                                    newCamera = NO_CAMERA;
-                                    changeCamera(cameraId, newCamera);
-                                }
-                            }
-                        }
-                    }
-
-
-                });
-
-        // Front Camera Listener
-
-        frontCameraCheckBox
-                .setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-                    public void onCheckedChanged(CompoundButton buttonView,
-                                                 boolean isChecked) {
-                        if (mPreview == null) {
-                            initializeCameraPreview(FRONT_CAMERA);
-                        } else {
-                            if (cameraJustChanged) {
-                                cameraJustChanged = false;
-                            } else {
-                                int newCamera = FRONT_CAMERA;
-                                if (isChecked) {
-                                    changeCamera(cameraId, newCamera);
-                                    cameraJustChanged = true;
-                                    if (mirrorCameraCheckBox.isChecked()) {
-                                        mirrorCameraCheckBox.setChecked(false);
-                                    } else
-                                        cameraJustChanged = false;
-                                } else {
-                                    newCamera = NO_CAMERA;
-                                    changeCamera(cameraId, newCamera);
-                                }
-                            }
-                        }
-                    }
-                });*/
 
         // Options Menu ImageView Listener
         optionsMenuImageButton.setOnTouchListener(new View.OnTouchListener() {
@@ -578,7 +583,7 @@ public class MirrorActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        if (mPreview == null) {
+        if (isCameraEnabled && wasCameraEnabled && mPreview == null) {
             initializeCameraPreview(sharedSettings.getInt(PREFS_ACTIVE_CAMERA,
                     0));
         }
@@ -699,7 +704,7 @@ public class MirrorActivity extends FragmentActivity implements
                     mPreview.startPreview();
                     preview.addView(mPreview);
 
-                    cameraSeekBar.setProgress(50);
+                    cameraSeekBar.setProgress(100);
 
                 } else if (lastActiveCamera == FRONT_CAMERA) {
 //                    cameraJustChanged = true;
@@ -716,7 +721,7 @@ public class MirrorActivity extends FragmentActivity implements
                     mPreview.startPreview();
                     preview.addView(mPreview);
 
-                    cameraSeekBar.setProgress(100);
+                    cameraSeekBar.setProgress(0);
                 }
                 break;
 
@@ -754,29 +759,6 @@ public class MirrorActivity extends FragmentActivity implements
 
     private void changeTextColors(int color) {
         analogSpeedMeter.setDigitalSpeedometerColor(color);
-    }
-
-    /**
-     *
-     * @param heightMeters
-     * @return
-     * @deprecated
-     */
-    private String formatHeight(double heightMeters) {
-        String height = "Unknown";
-        switch (measureUnit) {
-            case 0:
-                String heightMetersText = " m";
-                DecimalFormat df = new DecimalFormat("#.#");
-                height = df.format(heightMeters) + heightMetersText;
-                break;
-            case 1:
-                String heightMilesText = " ft";
-                DecimalFormat dfm = new DecimalFormat("#.#");
-                height = dfm.format(heightMeters * 3.2808) + heightMilesText;
-                break;
-        }
-        return height;
     }
 
     private void setBrightness() {
@@ -833,7 +815,9 @@ public class MirrorActivity extends FragmentActivity implements
         setSpeedometer();
         boolean showIntro = settings.isShowIntro();
         editor.putBoolean(PREFS_SHOW_INTRO, showIntro);
-
+        isCameraEnabled=settings.isCameraEnabled();
+        editor.putBoolean(PREFS_CAMERA_ENABLED,isCameraEnabled);
+        
         measureUnit = settings.getMeasureUnit();
         analogSpeedMeter.setMeasureUnit(measureUnit);
         updateSpeedometer(timer.getDistance());

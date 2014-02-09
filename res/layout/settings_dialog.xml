@@ -119,6 +119,26 @@
 		            android:layout_weight="0.84"
 		            android:text="@string/enable_intro" />
 		    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/enableCameraSettingsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/five_sp"
+                    android:layout_weight="0.19"
+                    android:textSize="15sp"
+                    android:text="@string/enable_camera" />
+
+                <CheckBox
+                    android:id="@+id/enableCameraSettingsCheckBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.84"
+                    android:text="@string/enable_camera_info" />
+            </LinearLayout>
 	 	</LinearLayout>
     </ScrollView>
 
