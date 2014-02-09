@@ -5,10 +5,10 @@ import java.text.DecimalFormat;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
-import android.hardware.Sensor;
+/*import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.hardware.SensorManager;*/
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -55,8 +55,8 @@ import com.google.ads.*;
 @SuppressLint("NewApi")
 public class MirrorActivity extends FragmentActivity implements
         SettingsDialogFragment.SettingsDialogListener,
-        ExtraMirrorSharedPreferences,
-        SensorEventListener {
+        ExtraMirrorSharedPreferences{/*,
+        SensorEventListener {*/
     private int FRONT_CAMERA = 0;
     private int MIRROR_CAMERA = 1;
     private final int NO_CAMERA = 2;
@@ -111,14 +111,14 @@ public class MirrorActivity extends FragmentActivity implements
 //    private double latitude, longitude;
 
     //Orientation variable
-    float prv_roll_angle;
+    //float prv_roll_angle;
 
     // Ads Controls
     private AdView adView;
 
 
-    private SensorManager mSensorManager;
-    private Sensor mOrientation;
+    /*private SensorManager mSensorManager;
+    private Sensor mOrientation;*/
     private TimerRunnable timer;
     private int numOfCameras;
 
@@ -326,10 +326,10 @@ public class MirrorActivity extends FragmentActivity implements
                     case 0:
                         newCamera=NO_CAMERA;
                         break;
-                    case 50:
+                    case 100:
                         newCamera=MIRROR_CAMERA;
                         break;
-                    case 100:
+                    case 50:
                         newCamera=FRONT_CAMERA;
                         if(step==100)
                             newCamera=0;
@@ -454,8 +454,8 @@ public class MirrorActivity extends FragmentActivity implements
         adRequest.addTestDevice(Keys.SONY_DEVICE_ID); // Test Android Device
         adView.loadAd(adRequest);
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        //mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        //mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
     }
 
     private float calculateSpeedmeterSize(DisplayMetrics metrics) {
@@ -557,7 +557,7 @@ public class MirrorActivity extends FragmentActivity implements
             mCamera.release();
         }
         SharedPreferences.Editor editor = sharedSettings.edit();
-        cameraId=cameraId!=NO_CAMERA?cameraId:0;
+       // cameraId=cameraId!=NO_CAMERA?cameraId:0;
         editor.putInt(PREFS_ACTIVE_CAMERA, cameraId);
         editor.commit();
         getWindow().setAttributes(systemParameters);// Set System Screen
@@ -567,7 +567,7 @@ public class MirrorActivity extends FragmentActivity implements
         // intent.addCategory(Intent.CATEGORY_HOME);
         // intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
 
-        mSensorManager.unregisterListener(this);
+        //mSensorManager.unregisterListener(this);
     }
 
     /*
@@ -582,7 +582,7 @@ public class MirrorActivity extends FragmentActivity implements
             initializeCameraPreview(sharedSettings.getInt(PREFS_ACTIVE_CAMERA,
                     0));
         }
-        mSensorManager.registerListener(this, mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
+        //mSensorManager.registerListener(this, mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 	/*
@@ -845,7 +845,7 @@ public class MirrorActivity extends FragmentActivity implements
         setBrightness();
     }
 
-    @Override
+    /*@Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 //        float azimuth_angle = sensorEvent.values[0];
 //        float pitch_angle = sensorEvent.values[1];
@@ -861,10 +861,10 @@ public class MirrorActivity extends FragmentActivity implements
             prv_roll_angle=roll_angle;
         }
 //        Log.i("Sensor Result(zxy) :",azimuth_angle+", "+pitch_angle+", "+roll_angle);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
-    }
+    }*/
 }

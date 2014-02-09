@@ -24,7 +24,8 @@
         android:allowBackup="false"
         android:theme="@style/MainTheme" >
         <activity android:name="com.bue.extramirror.IntroActivity" 
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            >
             <intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
@@ -32,16 +33,13 @@
         </activity>
         <activity
             android:name="com.bue.extramirror.MirrorActivity"
-            android:label="">
+            android:label=""
+            android:screenOrientation="locked">
 			<meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value="com.bue.extramirror.IntroActivity" 
             />			                     
         </activity>
-        <service 
-            android:name="com.bue.extramirror.services.ExtraMirrorService">            
-        </service>
-
         <activity
             android:name="com.google.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />        
