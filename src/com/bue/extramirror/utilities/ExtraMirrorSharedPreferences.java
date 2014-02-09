@@ -12,7 +12,9 @@ public interface ExtraMirrorSharedPreferences {
 	//public final String PREFS_PAUSED_ACTIVITY="PausedActivity";
 	
 	public final String STATE_PAUSED_AT_MAIN="PausedAtMain";
-	
+
+    //Intent extras
+    public final String EXTRA_INTRO_ORINTATION="introOrientation";
 	public final int PAUSED_AT_INTRO=0;
 	public final int PAUSED_AT_EXTRA_MIRROR=1;
 }

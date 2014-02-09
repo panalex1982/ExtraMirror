@@ -8,6 +8,7 @@ import com.google.ads.AdSize;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Notification;
@@ -21,8 +22,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -118,7 +121,28 @@ public class IntroActivity extends FragmentActivity implements ExtraMirrorShared
 	private void openMainApplication(){
 		//Intent mainActivity=new Intent(IntroActivity.this, MirrorActivity.class);
 		try{
-			startActivity(new Intent(IntroActivity.this, MirrorActivity.class));
+            Display getOrient = getWindowManager().getDefaultDisplay();
+
+            int rotation = getOrient.getRotation();
+            int orientation =0;
+            switch(rotation){
+                case Surface.ROTATION_0:
+                    orientation= ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+                case Surface.ROTATION_90:
+                    orientation=ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case Surface.ROTATION_180:
+                    orientation=ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+                case Surface.ROTATION_270:
+                    orientation=ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+            }
+            //Log.i("Orientation: ","Rotation is "+rotation+" Orientation is "+orientation);
+            Intent mainIntent=new Intent(IntroActivity.this, MirrorActivity.class);
+            mainIntent.putExtra(EXTRA_INTRO_ORINTATION,orientation);
+			startActivity(mainIntent);
 		}catch(Exception ex){
 			String exs=ex.toString();
 			Log.d("Exception", exs);

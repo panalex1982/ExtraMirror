@@ -33,8 +33,7 @@
         </activity>
         <activity
             android:name="com.bue.extramirror.MirrorActivity"
-            android:label=""
-            android:screenOrientation="locked">
+            android:label="">
 			<meta-data
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value="com.bue.extramirror.IntroActivity" 
