@@ -50,6 +50,7 @@ import com.bue.extramirror.utilities.ExtraMirrorSharedPreferences;
 import com.bue.extramirror.utilities.Keys;
 import com.bue.extramirror.utilities.RuntimeSharedObjects;
 import com.google.ads.*;
+import com.google.analytics.tracking.android.EasyTracker;
 
 @SuppressLint("NewApi")
 public class MirrorActivity extends FragmentActivity implements
@@ -460,6 +461,19 @@ public class MirrorActivity extends FragmentActivity implements
             initializeCameraPreview(sharedSettings.getInt(PREFS_ACTIVE_CAMERA,
                     0));
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EasyTracker.getInstance(this).activityStart(this);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
     }
 
 	/*

@@ -10,20 +10,12 @@ import com.google.analytics.tracking.android.EasyTracker;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -100,8 +92,8 @@ public class IntroActivity extends FragmentActivity implements ExtraMirrorShared
 			
 						    // Initiate a generic request to load it with an ad
 							AdRequest adRequest = new AdRequest();
-                            adRequest.addTestDevice(AdRequest.TEST_EMULATOR); // Emulator
-                            adRequest.addTestDevice(Keys.SONY_DEVICE_ID); // Test Android Device                    // Test Android Device
+                            /*adRequest.addTestDevice(AdRequest.TEST_EMULATOR); // Emulator
+                            adRequest.addTestDevice(Keys.SONY_DEVICE_ID); // Test Android Device                    // Test Android Device*/
 						    adView.loadAd(adRequest);
 				}else if(isPausedAtMain){
 					openMainApplication();					
@@ -180,14 +172,13 @@ public class IntroActivity extends FragmentActivity implements ExtraMirrorShared
 	@Override
 	protected void onStart() {
 		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-
+		EasyTracker.getInstance(this).activityStart(this);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
+		EasyTracker.getInstance(this).activityStop(this);
 	}
 	
 	
