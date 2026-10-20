@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+        Runtime ("dangerous") permissions. Both are requested from the user at runtime and
+        are only used while the app is on screen. See PRIVACY_POLICY.md and
+        PERMISSIONS_AND_MIGRATION.md.
+    -->
+
+    <!-- Live camera preview used as the mirror / road view. Nothing is recorded or stored. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!--
+        GPS speed, distance, altitude and moving/standing time, computed on the device.
+        Since Android 12 a request for FINE location must also include COARSE location, and
+        the user may choose to grant only approximate location.
+        ACCESS_BACKGROUND_LOCATION is intentionally NOT requested.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Install-time ("normal") permissions used by the Google Mobile Ads / UMP SDKs. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--
+        Required (Android 13+) to read the advertising ID. The Ads SDK merges it anyway;
+        it is declared here so it is visible when reviewing the app's permissions.
+    -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <!-- The app still works as a speedometer without a camera, and as a mirror without GPS. -->
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
+    <application
+        android:name=".ExtraMirrorApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ExtraMirror"
+        tools:targetApi="37">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+    </application>
+
+</manifest>

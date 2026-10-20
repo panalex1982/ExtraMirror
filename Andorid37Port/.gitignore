@@ -1,0 +1,17 @@
+# The repository root .gitignore (written for the legacy Eclipse project) ignores
+# anything named "gradle", "gradlew" and "*.gradle". Re-include what this Gradle
+# project needs.
+!/gradle/
+!/gradle/**
+!/gradlew
+!/gradlew.bat
+
+.gradle/
+.kotlin/
+build/
+local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/

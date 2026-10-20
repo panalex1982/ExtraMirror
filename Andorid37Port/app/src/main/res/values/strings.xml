@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Extra Mirror</string>
+
+    <!-- Intro -->
+    <string name="start_extra_mirror">Start Extra Mirror</string>
+    <string name="zoom_instructions">Swipe up on the camera view to zoom in, swipe down to zoom out.</string>
+    <string name="zoom_instructions_image">Animation showing a finger swiping up and down on the camera view to zoom</string>
+    <string name="privacy_policy">Privacy policy</string>
+
+    <!-- Mirror screen -->
+    <string name="engine_on">Engine on. Tap to stop the trip timers</string>
+    <string name="engine_off">Engine off. Tap to start the trip timers</string>
+    <string name="camera_front">Front camera view. Tap to switch to the mirror view</string>
+    <string name="camera_mirror">Mirror view. Tap to switch to the front camera view</string>
+    <string name="camera_unavailable">Camera switching unavailable</string>
+    <string name="more_options">More options</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_privacy_choices">Privacy choices (ads)</string>
+    <string name="exit">Exit</string>
+    <string name="exit_title">Close Extra Mirror!</string>
+    <string name="exit_message">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="no_zoom">This camera does not support zoom, please change camera and try again!</string>
+    <string name="camera_view">Camera view. Swipe up or down to zoom</string>
+
+    <!-- Speedometer -->
+    <string name="unit_kmh">Km/h</string>
+    <string name="unit_mph">mph</string>
+    <string name="unit_km">km</string>
+    <string name="unit_mi">mi.</string>
+    <string name="unit_m">m</string>
+    <string name="unit_ft">ft</string>
+    <string name="speedometer_description">Speed %1$s %2$s, distance %3$s %4$s, standing time %5$s, moving time %6$s</string>
+
+    <!-- Permissions / status -->
+    <string name="permissions_title">Before you start</string>
+    <string name="permissions_camera_reason">Camera: shows the road ahead or acts as a rear-view mirror. The picture is only displayed on your screen. It is never recorded, saved or uploaded.</string>
+    <string name="permissions_location_reason">Precise location (GPS): used on your device to calculate speed, distance, altitude and moving / standing time. It is only used while Extra Mirror is open, and it is never stored or shared.</string>
+    <string name="permissions_continue">Continue</string>
+    <string name="permissions_not_now">Not now</string>
+    <string name="status_location_needed">Speedometer needs location access</string>
+    <string name="status_precise_needed">Speed needs precise location (approximate is on)</string>
+    <string name="status_location_off">Location is turned off</string>
+    <string name="status_no_gps">This device has no GPS</string>
+    <string name="status_waiting_gps">Waiting for GPS…</string>
+    <string name="status_camera_needed">Camera access is needed for the mirror view</string>
+    <string name="action_allow">Allow</string>
+    <string name="action_open_settings">Open settings</string>
+    <string name="action_turn_on">Turn on</string>
+
+    <!-- Settings dialog -->
+    <string name="measure_units">Measure units</string>
+    <string name="units_metric">Metric (kilometers, kilometers/hour)</string>
+    <string name="units_imperial">Imperial (miles, miles per hour)</string>
+    <string name="brightness">Brightness</string>
+    <string name="screen_always_on">Screen always on</string>
+    <string name="speedometer_mode">Speedometer mode</string>
+    <string name="speedometer_analog">Analog</string>
+    <string name="speedometer_digital">Digital</string>
+    <string name="show_intro">Show zoom instructions at startup</string>
+    <string name="enable_camera">Enable camera</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Privacy policy screen (summary of PRIVACY_POLICY.md) -->
+    <string name="back">Back</string>
+    <string name="privacy_open_full">Read the full privacy policy</string>
+    <string name="privacy_intro">Extra Mirror does not have accounts or servers and the developer does not receive any data about you. This is a summary; the full policy is available online.</string>
+    <string name="privacy_camera_title">Camera</string>
+    <string name="privacy_camera_body">The camera picture is shown live on your screen and processed only in your device\'s memory. No photos or videos are taken, saved or sent anywhere. The camera is used only while Extra Mirror is open on screen, and you can turn it off in Settings.</string>
+    <string name="privacy_location_title">Location</string>
+    <string name="privacy_location_body">Precise GPS location is used on your device to calculate speed, trip distance, altitude and moving / standing time. Location coordinates are never stored or shared. Location is used only while the app is open on screen; the app does not ask for background location.</string>
+    <string name="privacy_settings_title">Data stored on your device</string>
+    <string name="privacy_settings_body">Your preferences (units, brightness, speedometer style, camera choice) and the current trip counters are kept only on your device. They are excluded from backups and device transfers, and are deleted when you uninstall the app or clear its storage.</string>
+    <string name="privacy_ads_title">Advertising (Google AdMob)</string>
+    <string name="privacy_ads_body">The app shows ads from Google AdMob. Google may collect your advertising ID, IP address (approximate location), device information and ad interactions to serve, measure and, with your consent where required, personalize ads. In the EEA, UK and Switzerland, and where US state laws apply, you are asked for your choices through Google\'s consent form, and you can change them at any time from \"Privacy choices\". You can also reset or delete your advertising ID in Android Settings &gt; Privacy &gt; Ads.</string>
+    <string name="privacy_analytics_title">Analytics</string>
+    <string name="privacy_analytics_body">The app contains no analytics or tracking SDK of its own.</string>
+    <string name="privacy_permissions_title">Your control</string>
+    <string name="privacy_permissions_body">You can revoke the camera or location permission at any time in Android Settings &gt; Apps &gt; Extra Mirror &gt; Permissions. The app keeps working without them, with the corresponding feature turned off.</string>
+</resources>
